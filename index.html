@@ -515,26 +515,18 @@ function renderAcct(){
   if(!sb)return `<div class="panel acct"><h2>Sync is not set up</h2><p>Your progress saves on this device only. To sync across devices, add your Supabase project URL and anon key to <span class="mono">config.js</span> and deploy again.</p></div>`;
   if(user)return `<div class="panel acct"><h2>Sync</h2><dl><dt>Signed in</dt><dd>${esc(user.email||"")}</dd><dt>Last sync</dt><dd>${lastSync?lastSync.toLocaleTimeString():"Not yet"}</dd><dt>Waiting</dt><dd>${n} day${n===1?"":"s"}</dd>${syncErr?`<dt>Error</dt><dd class="err">${esc(syncErr)}</dd>`:""}</dl>
     <div class="actions"><button class="btn" data-act="syncnow">Sync now</button><button class="btn ghost" data-act="signout">Sign out</button></div></div>`;
-  if(A.step==="code")return `<div class="panel acct"><h2>Enter your code</h2><p>We sent a code to <b>${esc(A.email)}</b>. It can take a minute. Check spam if you do not see it.</p>
-    <form id="codeform"><label for="otp" class="eyebrow">Code</label><input id="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="10" required>
-    ${A.err?`<span class="err">${esc(A.err)}</span>`:""}<div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>${A.busy?"Checking…":"Sign in"}</button><button class="btn ghost" type="button" data-act="restart">Use another email</button></div></form></div>`;
-  return `<div class="panel acct"><h2>Sign in to sync</h2><p>Your progress saves on this device now. Sign in to keep it in sync on your phone and laptop. We email you a one-time code. You do not need a password.</p>
-    <form id="emailform"><label for="email" class="eyebrow">Email</label><input id="email" type="email" autocomplete="email" required value="${esc(A.email)}">
-    ${A.err?`<span class="err">${esc(A.err)}</span>`:""}<div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>${A.busy?"Sending…":"Email me a code"}</button></div></form></div>`;
+  return `<div class="panel acct"><h2>Sign in to sync</h2><p>Your progress saves on this device now. Sign in to keep it in sync on your phone and laptop. Use the email and password you set up in Supabase.</p>
+    <form id="loginform"><label for="email" class="eyebrow">Email</label><input id="email" type="email" autocomplete="username" required value="${esc(A.email)}">
+    <label for="pw" class="eyebrow">Password</label><input id="pw" type="password" autocomplete="current-password" required>
+    ${A.err?`<span class="err">${esc(A.err)}</span>`:""}<div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>${A.busy?"Signing in…":"Sign in"}</button></div></form></div>`;
 }
 document.addEventListener("submit",async e=>{
-  const f=e.target;if(f.id!=="emailform"&&f.id!=="codeform")return;
+  if(e.target.id!=="loginform")return;
   e.preventDefault();const A=state.auth;A.err="";A.busy=true;
-  if(f.id==="emailform"){
-    A.email=document.getElementById("email").value.trim();cache();render();
-    const {error}=await sb.auth.signInWithOtp({email:A.email});
-    A.busy=false;if(error)A.err=error.message;else A.step="code";render();
-    if(!error)setTimeout(()=>{const i=document.getElementById("otp");if(i)i.focus();},50);
-  }else{
-    const token=document.getElementById("otp").value.trim();render();
-    const {error}=await sb.auth.verifyOtp({email:A.email,token,type:"email"});
-    A.busy=false;if(error){A.err=error.message;render();}else{A.step="email";state.view="today";render();}
-  }
+  A.email=document.getElementById("email").value.trim();const password=document.getElementById("pw").value;
+  document.activeElement&&document.activeElement.blur();cache();render();
+  const {error}=await sb.auth.signInWithPassword({email:A.email,password});
+  A.busy=false;if(error){A.err=error.message==="Invalid login credentials"?"Email or password is wrong. Check them in Supabase → Authentication → Users.":error.message;render();}else{state.view="today";render();}
 });
 
 /* ---------------- derived ---------------- */
@@ -741,7 +733,6 @@ app.addEventListener("click",e=>{
   if(a==="all"){state.log[s]={...entry(s),done:plan(s).x.map(x=>x.id)};save(s);render();}
   if(a==="syncnow"){sync();}
   if(a==="signout"){sb.auth.signOut().then(()=>{user=null;lastSync=null;setSync();render();});}
-  if(a==="restart"){state.auth.step="email";state.auth.err="";render();}
   if(a==="clear"){state.log[s]={done:[],rpe:null,note:""};save(s);render();}
 });
 app.addEventListener("input",e=>{if(e.target.id==="note"){state.log[state.sel]={...entry(state.sel),note:e.target.value};save(state.sel);}});
