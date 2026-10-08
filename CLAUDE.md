@@ -14,7 +14,10 @@ changes in plain language and keep commits small and clear.
 - `index.html`: the whole app. CSS at the top; one inline script holds all data and logic.
   - `S`: research sources. `E`: exercise library (name, category, how, why, sources).
   - `VID`: one YouTube video ID per exercise.
-  - `PH`: the six phases with dates and doses. `TPL`: weekly session templates. `plan(date)` builds a day.
+  - `PH`: the six phases and doses. `TPL`: session templates. `plan(date)` builds a day.
+  - `PROFILE` (localStorage `firstchair.profile`): first day, end date, days per week, minutes, gear. The plan, phase dates, calendar and copy all come from it. `DEFAULT_PROFILE` is Connor's original plan and must keep producing it exactly.
+  - Onboarding shows only when a device has no profile and no logged workouts. Settings view (`set`) edits the profile; changes save and reload.
+  - Snowboard is "Coming soon" until it has sourced research. Do not add snowboard advice without real citations in `S`.
   - Sync: local-first in `localStorage`, pushed to the `workout_log` table by `sync()`.
 - `config.js`: Supabase URL and **publishable** key (safe to be public).
 - `sw.js`: offline cache. **Change `VERSION` on every deploy that changes app files**, or phones keep the old version.

@@ -31,6 +31,7 @@
   --str:#2456A6; --pow:#C8741F; --car:#C2364A; --bal:#0F8579; --mob:#7650B5;
   --green:#2E8B57; --blue:#1D5FC2; --black:#132031;
   --ph-onramp:#B9CCE3; --ph-base:#7FA6D6; --ph-deload:#CBD6E4; --ph-build:#3A6DB8; --ph-peak:#173D78; --ph-taper:#97B4DA;
+  --ob-scrim:linear-gradient(180deg,rgba(10,36,84,.34) 0%,rgba(10,36,84,.06) 42%,rgba(10,36,84,.30) 100%);
   --scrim:linear-gradient(180deg,rgba(10,36,84,.30) 0%,rgba(10,36,84,0) 26%,rgba(238,242,246,0) 48%,rgba(238,242,246,.86) 74%,#EEF2F6 90%);
   --topo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='300' viewBox='0 0 420 300' fill='none' stroke='%231B5BB8' stroke-opacity='.10'%3E%3Cpath d='M-20 130C35 102 86 160 150 124S272 42 440 86'/%3E%3Cpath d='M-20 160C40 128 92 188 160 150S280 66 440 114'/%3E%3Cpath d='M-20 190C50 155 100 214 170 175S290 92 440 142'/%3E%3Cpath d='M-20 220C60 180 110 240 180 200S300 120 440 170'/%3E%3Cpath d='M-20 245C70 205 120 262 190 225S310 150 440 198'/%3E%3Cpath d='M-20 270C80 232 130 285 200 250S320 180 440 226'/%3E%3Cpath d='M-20 296C90 258 140 308 210 276S330 208 440 254'/%3E%3Cpath d='M300 40C330 12 392 22 398 52S360 98 330 90 286 62 300 40Z'/%3E%3Cpath d='M318 46C336 30 376 36 380 54S356 80 338 76 308 60 318 46Z'/%3E%3Cpath d='M60 40C88 18 140 28 146 52S112 86 84 80 44 60 60 40Z'/%3E%3C/svg%3E");
   --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
@@ -47,6 +48,7 @@
   --str:#6E9BEA; --pow:#EFA457; --car:#EE6F80; --bal:#41BFAF; --mob:#AA8CE8;
   --green:#4FBF7F; --blue:#5B9BEF; --black:#E7EDF5;
   --ph-onramp:#2B3E57; --ph-base:#3C5F8E; --ph-deload:#26364B; --ph-build:#5584CC; --ph-peak:#8FB6EE; --ph-taper:#46689A;
+  --ob-scrim:linear-gradient(180deg,rgba(4,10,20,.55) 0%,rgba(4,10,20,.35) 50%,rgba(4,10,20,.6) 100%);
   --scrim:linear-gradient(180deg,rgba(4,10,20,.45) 0%,rgba(4,10,20,.30) 30%,rgba(11,19,30,.55) 50%,rgba(11,19,30,.92) 74%,#0B131E 90%);
   --topo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='300' viewBox='0 0 420 300' fill='none' stroke='%236AA5F2' stroke-opacity='.10'%3E%3Cpath d='M-20 130C35 102 86 160 150 124S272 42 440 86'/%3E%3Cpath d='M-20 160C40 128 92 188 160 150S280 66 440 114'/%3E%3Cpath d='M-20 190C50 155 100 214 170 175S290 92 440 142'/%3E%3Cpath d='M-20 220C60 180 110 240 180 200S300 120 440 170'/%3E%3Cpath d='M-20 245C70 205 120 262 190 225S310 150 440 198'/%3E%3Cpath d='M-20 270C80 232 130 285 200 250S320 180 440 226'/%3E%3Cpath d='M-20 296C90 258 140 308 210 276S330 208 440 254'/%3E%3Cpath d='M300 40C330 12 392 22 398 52S360 98 330 90 286 62 300 40Z'/%3E%3Cpath d='M318 46C336 30 376 36 380 54S356 80 338 76 308 60 318 46Z'/%3E%3Cpath d='M60 40C88 18 140 28 146 52S112 86 84 80 44 60 60 40Z'/%3E%3C/svg%3E");
   color-scheme:dark}}
@@ -59,6 +61,7 @@
   --str:#6E9BEA; --pow:#EFA457; --car:#EE6F80; --bal:#41BFAF; --mob:#AA8CE8;
   --green:#4FBF7F; --blue:#5B9BEF; --black:#E7EDF5;
   --ph-onramp:#2B3E57; --ph-base:#3C5F8E; --ph-deload:#26364B; --ph-build:#5584CC; --ph-peak:#8FB6EE; --ph-taper:#46689A;
+  --ob-scrim:linear-gradient(180deg,rgba(4,10,20,.55) 0%,rgba(4,10,20,.35) 50%,rgba(4,10,20,.6) 100%);
   --scrim:linear-gradient(180deg,rgba(4,10,20,.45) 0%,rgba(4,10,20,.30) 30%,rgba(11,19,30,.55) 50%,rgba(11,19,30,.92) 74%,#0B131E 90%);
   color-scheme:dark}
 *{box-sizing:border-box}
@@ -96,7 +99,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:.01em;text-
 .hero{min-height:min(50vh,440px);padding-top:env(safe-area-inset-top,0px);color:#fff}
 .hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"loc sync" "brand ticket";align-items:start;gap:14px 16px;padding-block:16px 24px}
 .loc{grid-area:loc;align-self:center;font:500 11px/1.2 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.88);text-shadow:0 1px 6px rgba(0,20,50,.5)}
-.hero .sync{grid-area:sync;justify-self:end}
+.hbtns{grid-area:sync;justify-self:end;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .brand{grid-area:brand;text-shadow:0 2px 18px rgba(0,22,60,.45)}
 .brand h1{font-size:clamp(46px,13vw,92px);font-weight:800;text-transform:uppercase;letter-spacing:.005em;line-height:.86}
 .brand h1 span{display:block;font-style:italic;font-weight:700;color:#DCEBFF}
@@ -289,6 +292,67 @@ a.yt:hover{text-decoration:underline}
 .sechd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .sechd .eyebrow{padding:5px 9px;border-radius:999px;background:var(--glass);color:var(--fg)}
 
+/* onboarding: full-screen over the app, same photo */
+#onboard{position:fixed;inset:0;z-index:30;overflow-y:auto;background:var(--ob-scrim),#5D8BC9 url("img/teton-1400.jpg") 30% 50%/cover no-repeat}
+@media (min-width:900px){#onboard{background-image:var(--ob-scrim),url("img/teton-2048.jpg");background-position:center,40% 38%}}
+.ob{max-width:460px;min-height:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.ob-top{display:flex;align-items:center;gap:10px;min-height:36px}
+.ob-back{width:36px;height:36px;border-radius:10px;border:1px solid var(--glass-line);background:var(--glass);font-size:20px;line-height:1;padding:0}
+.ob-steps{flex:1;display:flex;gap:4px}.ob-steps i{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.45)}.ob-steps i.on{background:#fff}
+.ob-n{font:500 11px/1 var(--f-mono);letter-spacing:.1em;color:#fff;text-shadow:0 1px 4px rgba(0,20,50,.5)}
+.ob-q{color:#fff;text-shadow:0 2px 14px rgba(0,22,60,.5)}
+.ob-q h2{font-size:clamp(34px,10vw,44px);font-weight:800;text-transform:uppercase;line-height:.92}
+.ob-q p{margin:8px 0 0;color:rgba(255,255,255,.94)}
+.ob-q .eyebrow{color:rgba(255,255,255,.9)}
+.ob-hero h1{font-size:clamp(60px,18vw,92px);font-weight:800;text-transform:uppercase;line-height:.86;margin-top:10px}
+.ob-hero h1 span{display:block;font-style:italic;font-weight:700;color:#DCEBFF}
+.ob-hero p{font-size:17px;max-width:26ch;margin-top:14px}
+.ob .panel{padding:16px}
+.ob-grow{flex:1}
+.cta{border:0;background:var(--accent);color:var(--accent-fg);border-radius:12px;padding:15px 16px;font:700 19px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;width:100%}
+.cta:disabled{opacity:.45;cursor:default}
+.linkbtn{border:0;background:none;color:inherit;text-decoration:underline;text-underline-offset:3px;font-size:14px;padding:6px;align-self:center}
+.ob .linkbtn{color:#fff;text-shadow:0 1px 6px rgba(0,20,50,.6)}
+.fld{display:block;font:600 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.grp+.grp{margin-top:16px}
+.seg{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:6px}
+.opt{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 6px;font-weight:600;font-size:14px;text-align:center;line-height:1.2;color:var(--fg)}
+.opt small{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface));box-shadow:0 0 0 1px var(--accent) inset}
+.opt:disabled{opacity:.55;cursor:default}
+.sport{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sport .opt{padding:16px 8px 12px;border-radius:14px}
+.sport svg{display:block;width:64px;height:64px;margin:0 auto 6px}
+.sport b{display:block;font:800 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.soon{display:inline-block;margin-top:6px;font:600 9.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+input[type=date]{width:100%;font:500 16px var(--f-mono);padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.bigwk{display:flex;align-items:baseline;gap:10px;margin-top:12px}
+.bigwk b{font:800 54px/1 var(--f-display);color:var(--flag);font-variant-numeric:tabular-nums}
+.bigwk span{font:600 15px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em}
+.note{margin-top:10px;font-size:13px;padding:10px 12px;border-radius:10px;background:var(--sunk)}
+.note.warn{background:color-mix(in srgb,var(--flag) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--flag) 40%,transparent)}
+.ob-build{align-items:center;justify-content:center;text-align:center;color:#fff}
+.ob-build h2{font-size:36px;font-weight:800;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,22,60,.5)}
+.ob-build ul{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px;font:500 13px/1.3 var(--f-mono);text-align:left}
+.ob-build li{opacity:.35;transition:opacity .3s;text-shadow:0 1px 6px rgba(0,20,50,.7)}
+.ob-build li.done{opacity:1}
+.ob-build li::before{content:"○ "}.ob-build li.done::before{content:"● "}
+
+/* cards on the day view: plan ready, home screen */
+.topcard{padding:16px 18px;margin-top:18px;display:grid;gap:8px}
+.topcard h3{font-size:24px;font-weight:700}
+.topcard p{margin:0;font-size:14px}
+.topcard .actions{margin-top:4px}
+.hs-steps{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:10px;counter-reset:s}
+.hs-steps li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;counter-increment:s;font-size:14px}
+.hs-steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);font:700 15px/1 var(--f-display)}
+.hs-steps small{display:block;color:var(--muted);font-size:12.5px}
+
+/* settings */
+.setv{display:grid;gap:16px;margin-top:20px;max-width:620px}
+.setv .panel{padding:18px}
+.setv h2{font-size:28px;margin-bottom:4px}
+.setv .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -298,7 +362,7 @@ a.yt:hover{text-decoration:underline}
 <header class="top hero">
   <div class="wrap">
     <span class="loc">Grand Targhee · Alta, Wyoming</span>
-    <button class="sync" id="sync" data-view="acct">Loading…</button>
+    <div class="hbtns"><button class="sync" id="sync" data-view="acct">Loading…</button><button class="sync" id="setbtn" data-view="set">Settings</button></div>
     <div class="brand">
       <h1>First Chair <span>Prep</span></h1>
       <p id="planline">Oct 8 → Dec 15, 2026 · 6 phases · full gym</p>
@@ -326,6 +390,7 @@ a.yt:hover{text-decoration:underline}
 </nav>
 
 <main class="wrap" id="app"></main>
+<div id="onboard" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
@@ -716,7 +781,8 @@ function renderDay(){
   const dm=Object.values(doneMin(s)).reduce((a,b)=>a+b,0);
   return `<div class="grid2">
   <section>
-    <div class="dayhd">
+    ${topCards()}
+    <div class="dayhd"${topCards()?' style="margin-top:16px"':""}>
       <button class="nav" data-act="prev" aria-label="Previous day" ${s<=START?"disabled":""}>‹</button>
       <span class="date">${fmt(s)}</span>
       <button class="nav" data-act="next" aria-label="Next day" ${s>=END?"disabled":""}>›</button>
@@ -880,6 +946,116 @@ function renderSci(){
   </div>`;
 }
 
+/* ---------------- onboarding, settings, home screen ---------------- */
+state.draft={...PROFILE};
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+const isInstalled=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
+const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+// The plan's real start for a given profile (plans longer than about 12 weeks start later)
+function startFor(start,end){const t=addDays(end,-7),earliest=addDays(mondayOf(t),-77);return start<earliest?earliest:start}
+function weeksLine(end){const s=startFor(TODAY,end),n=Math.ceil((diff(s,end)+1)/7);return {n,start:s}}
+const optBtns=(key,opts,cur,attr="pset")=>opts.map(([v,l,sm])=>`<button class="opt" data-${attr}="${key}" data-val="${v}" aria-pressed="${String(cur)===String(v)}">${l}${sm?`<small>${sm}</small>`:""}</button>`).join("");
+const DAYS_OPTS=[[3,"3"],[4,"4"],[5,"5"],[6,"6"]];
+const MIN_OPTS=[[45,"45","min"],[60,"60","min"],[90,"90","min"],[0,"No","limit"]];
+const GEAR_OPTS=[["gym","Full gym"],["db","Dumbbells"],["none","No gear"]];
+const SKI_SVG=`<svg viewBox="0 0 72 72" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M24 8v52c0 3-2 5-5 5"/><path d="M44 8v52c0 3-2 5-5 5"/></g><g fill="var(--accent)"><rect x="19" y="34" width="10" height="9" rx="2"/><rect x="39" y="34" width="10" height="9" rx="2"/></g></svg>`;
+const BOARD_SVG=`<svg viewBox="0 0 72 72" aria-hidden="true"><g transform="rotate(-20 36 36)"><rect x="10" y="26" width="52" height="20" rx="10" fill="none" stroke="currentColor" stroke-width="4"/><rect x="22" y="31" width="7" height="10" rx="2" fill="var(--accent)"/><rect x="43" y="31" width="7" height="10" rx="2" fill="var(--accent)"/></g></svg>`;
+const hsSteps=`<ol class="hs-steps">
+  <li><div>Open this page in <b>Safari</b> and tap <b>•••</b> at the bottom.</div></li>
+  <li><div>Tap <b>Share</b>.<small>The square with an arrow pointing up.</small></div></li>
+  <li><div>Tap <b>Add to Home Screen</b>.<small>Tap View More if you don't see it.</small></div></li>
+  <li><div>Keep <b>Open as Web App</b> on, then tap <b>Add</b>.</div></li></ol>
+  <p style="font-size:12.5px;color:var(--muted)">Menus move a little between iOS versions. Look for Share, then Add to Home Screen.</p>`;
+
+function topCards(){
+  let out="";
+  if(ssGet("fc.welcome")){const p=plan(START);
+    out+=`<div class="panel topcard"><span class="eyebrow">Your plan is ready</span><h3>${TOTAL_WEEKS} weeks to first chair</h3>
+      <p>${short(START)} → ${short(END)} · ${PROFILE.days} days a week · ${GEAR[PROFILE.gear]}${PROFILE.mins?` · up to ${PROFILE.mins} min`:""}.</p>
+      <p>${START===TODAY?`Day 1 is today: <b>${p.t}</b>.`:`Day 1 is ${fmt(START)}. Until then, stay active and sleep well.`} Tap a workout to see how and why. Check it off when you finish.</p>
+      <div class="actions"><button class="btn" data-act="welcomeok">Got it</button><button class="btn ghost" data-view="set">Change settings</button></div></div>`;}
+  const didWork=Object.values(state.log).some(e=>e.done&&e.done.length);
+  if(isIOS&&!isInstalled&&!lsGet("fc.hsdone")&&(didWork||ssGet("fc.welcome")))
+    out+=`<div class="panel topcard"><span class="eyebrow">One more thing</span><h3>Put it on your Home Screen</h3><p>It opens like an app: full screen, one tap, works offline.</p>${hsSteps}
+      <div class="actions"><button class="btn ghost" data-act="hsdismiss">Done</button></div></div>`;
+  return out;
+}
+
+function renderSettings(){
+  const d=state.draft,w=weeksLine(d.end),changed=["end","gear","days","mins"].some(k=>d[k]!==PROFILE[k]);
+  return `<div class="setv">
+  <div class="panel"><span class="eyebrow">Settings</span><h2>Your plan</h2><p class="sub">Change an answer, then rebuild. Your logged workouts stay.</p>
+    <div class="grp"><label class="fld" for="pend">First day on snow</label><input type="date" id="pend" value="${d.end}" min="${addDays(TODAY,7)}">
+      <div class="note">Plan: ${short(START)} → ${short(d.end)}${d.end!==PROFILE.end?` (was ${short(PROFILE.end)})`:""}.</div></div>
+    <div class="grp"><span class="fld">Sport</span><div class="seg" style="--n:2"><button class="opt" aria-pressed="true">Ski</button><button class="opt" disabled>Snowboard<small>Coming soon</small></button></div></div>
+    <div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,d.gear)}</div></div>
+    <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,d.days)}</div></div>
+    <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,d.mins)}</div></div>
+    ${d.gear!==PROFILE.gear?`<div class="note warn">Changing gear swaps some exercises on past days too, so a few old checkmarks may stop showing.</div>`:""}
+    <div class="actions" style="margin-top:16px"><button class="btn" data-act="psave" ${changed?"":"disabled"}>Rebuild my plan</button></div></div>
+  <div class="panel"><span class="eyebrow">Start date</span><h2>Started ${short(START)}</h2><p class="sub">Start over to begin again from day 1 today. Logged workouts stay on their dates.</p>
+    <button class="btn ghost" data-act="restart" ${START===TODAY?"disabled":""}>Start over from today</button></div>
+  ${isIOS&&!isInstalled?`<div class="panel"><span class="eyebrow">iPhone</span><h2>Put it on your Home Screen</h2>${hsSteps}</div>`:""}
+  <div class="panel"><span class="eyebrow">Welcome screens</span><h2>See what new users see</h2><p class="sub">A preview only. It does not change your plan.</p>
+    <button class="btn ghost" data-act="replay">Replay the welcome screens</button></div>
+  </div>`;
+}
+
+const ob={step:0,preview:false,a:{}};
+function openOnboard(preview){
+  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,mins:60};
+  const el=document.getElementById("onboard");el.hidden=false;document.body.style.overflow="hidden";renderOnboard();
+}
+function closeOnboard(){document.getElementById("onboard").hidden=true;document.body.style.overflow="";}
+function renderOnboard(){
+  const el=document.getElementById("onboard"),a=ob.a,n=ob.step;
+  const top=n>=1&&n<=3?`<div class="ob-top"><button class="ob-back" data-ob="back" aria-label="Back">‹</button><div class="ob-steps">${[1,2,3].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div><span class="ob-n">${n} of 3</span></div>`:"";
+  let body="";
+  if(n===0)body=`<div class="ob-q ob-hero" style="margin-top:18px"><span class="eyebrow">Grand Targhee · Alta, Wyoming</span><h1>First Chair <span>Prep</span></h1><p>Get your legs ready for first chair. A plan built around your first day on snow.</p></div>
+    <div class="ob-grow"></div><div class="panel" style="display:grid;gap:10px"><button class="cta" data-ob="next">Build my plan</button><p style="margin:0;text-align:center;font-size:12.5px;color:var(--muted)">About a minute. No account needed.</p></div>
+    ${ob.preview?`<button class="linkbtn" data-ob="close">Close preview</button>`:`<button class="linkbtn" data-ob="signin">Already have a plan? Sign in</button>`}`;
+  if(n===1){const w=weeksLine(a.end),days=diff(TODAY,a.end);
+    body=`<div class="ob-q"><h2>When's your first day on snow?</h2><p>Your plan counts down to this date.</p></div>
+    <div class="panel"><label class="fld" for="obdate">First chair</label><input type="date" id="obdate" value="${a.end}" min="${addDays(TODAY,7)}">
+      <div class="bigwk"><b>${w.n}</b><span>${w.n===1?"week":"weeks"} of training</span></div>
+      ${days<28?`<div class="note warn">That's soon. Your plan will be shorter and lighter, with less time to build strength.</div>`:""}
+      ${w.start>TODAY?`<div class="note">That's a while away. Your plan starts ${fmt(w.start)} so you peak at the right time. Until then, stay active.</div>`:""}</div>
+    <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;}
+  if(n===2)body=`<div class="ob-q"><h2>How do you ride?</h2><p>This sets the sport-specific work in your plan.</p></div>
+    <div class="sport"><button class="opt" aria-pressed="true">${SKI_SVG}<b>Ski</b><small>Two skis, poles</small></button>
+      <button class="opt" disabled>${BOARD_SVG}<b>Snowboard</b><span class="soon">Coming soon</span></button></div>
+    <div class="panel" style="padding:12px 14px;font-size:13.5px">Snowboard plans are coming. They need their own research on stance, rotation and wrist safety first.</div>
+    <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;
+  if(n===3)body=`<div class="ob-q"><h2>What's your setup?</h2><p>We fit the plan to your gear and your week.</p></div>
+    <div class="panel"><div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,a.gear,"oset")}</div></div>
+      <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,a.days,"oset")}</div></div>
+      <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,a.mins,"oset")}</div></div></div>
+    <div class="ob-grow"></div><button class="cta" data-ob="build">Build my plan</button>`;
+  if(n===4){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
+  if(n===5)body=`<div class="ob-q" style="margin-top:18px"><span class="eyebrow">Preview</span><h2>That's the flow</h2><p>New users land on their plan here. This was a preview, so your plan did not change.</p></div><div class="ob-grow"></div><button class="cta" data-ob="close">Back to my plan</button>`;
+  el.innerHTML=`<div class="ob${n===4?" ob-build":""}">${top}${body}</div>`;
+  el.scrollTop=0;
+  if(n===4){const lis=[...el.querySelectorAll("#oblist li")];lis.forEach((li,i)=>setTimeout(()=>li.classList.add("done"),380*(i+1)));setTimeout(finishOnboard,380*lis.length+700);}
+}
+function finishOnboard(){
+  if(ob.preview){ob.step=5;renderOnboard();return;}
+  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:"ski",gear:a.gear,days:a.days,mins:a.mins});
+  try{sessionStorage.setItem("fc.welcome","1")}catch(e){}
+  state.view="today";cache();location.reload();
+}
+document.getElementById("onboard").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=+b.dataset.val||(k==="gear"?b.dataset.val:0);renderOnboard();return;}
+  const o=b.dataset.ob;
+  if(o==="next"){ob.step++;renderOnboard();}
+  if(o==="back"){ob.step=Math.max(0,ob.step-1);renderOnboard();}
+  if(o==="build"){ob.step=4;renderOnboard();}
+  if(o==="close"){closeOnboard();}
+  if(o==="signin"){saveProfile({...DEFAULT_PROFILE});closeOnboard();state.view="acct";render();}
+});
+document.getElementById("onboard").addEventListener("change",e=>{if(e.target.id==="obdate"&&e.target.value){ob.a.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;renderOnboard();}});
+
 /* ---------------- render + events ---------------- */
 const app=document.getElementById("app");
 function render(){
@@ -887,7 +1063,7 @@ function render(){
   const openWhy=[...app.querySelectorAll("details.why[open]")].map(d=>d.closest("li")?.querySelector("[data-tick]")?.dataset.tick);
   const ae=document.activeElement;
   if(ae&&app.contains(ae)&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"))return; // do not re-render while typing
-  app.innerHTML=state.view==="today"?renderDay():state.view==="cal"?renderCal():state.view==="prog"?renderProg():state.view==="acct"?renderAcct():renderSci();
+  app.innerHTML=state.view==="today"?renderDay():state.view==="cal"?renderCal():state.view==="prog"?renderProg():state.view==="acct"?renderAcct():state.view==="set"?renderSettings():renderSci();
   openWhy.forEach(id=>{const b=app.querySelector(`[data-tick="${id}"]`);if(b)b.closest("li").querySelector("details").open=true;});
 }
 document.querySelectorAll(".top").forEach(el=>el.addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(!b)return;state.view=b.dataset.view;cache();render();window.scrollTo(0,0);}));
@@ -898,6 +1074,7 @@ app.addEventListener("click",e=>{
   if(t.dataset.rpe){const en={...entry(s)};const n=+t.dataset.rpe;en.rpe=en.rpe===n?null:n;state.log[s]=en;save(s);render();return;}
   if(t.dataset.day){state.sel=t.dataset.day;state.view="today";cache();render();window.scrollTo(0,0);return;}
   if(t.dataset.lib){state.lib=t.dataset.lib;render();return;}
+  if(t.dataset.view){state.view=t.dataset.view;cache();render();window.scrollTo(0,0);return;}
   const a=t.dataset.act;
   if(a==="prev"&&s>START){state.sel=addDays(s,-1);render();}
   if(a==="next"&&s<END){state.sel=addDays(s,1);render();}
@@ -906,10 +1083,19 @@ app.addEventListener("click",e=>{
   if(a==="syncnow"){sync();}
   if(a==="signout"){sb.auth.signOut().then(()=>{user=null;lastSync=null;setSync();render();});}
   if(a==="clear"){state.log[s]={done:[],rpe:null,note:""};save(s);render();}
+  if(t.dataset.pset){const k=t.dataset.pset,v=t.dataset.val;state.draft[k]=k==="days"||k==="mins"?+v:v;render();return;}
+  if(a==="psave"){saveProfile({...PROFILE,...state.draft});state.view="today";cache();location.reload();}
+  if(a==="restart"){saveProfile({...PROFILE,...state.draft,start:TODAY});state.view="today";cache();location.reload();}
+  if(a==="replay"){openOnboard(true);}
+  if(a==="welcomeok"){try{sessionStorage.removeItem("fc.welcome")}catch(e){}render();}
+  if(a==="hsdismiss"){try{localStorage.setItem("fc.hsdone","1")}catch(e){}render();}
 });
+app.addEventListener("change",e=>{if(e.target.id==="pend"&&e.target.value){state.draft.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;e.target.blur();render();}});
 app.addEventListener("input",e=>{if(e.target.id==="note"){state.log[state.sel]={...entry(state.sel),note:e.target.value};save(state.sel);}});
 app.addEventListener("focusout",e=>{if(e.target.id==="note")setTimeout(render,0);});
 render();setSync();
+// New here: no saved answers and nothing logged on this device
+if(!lsGet(PROFILE_KEY)&&!Object.keys(state.log).length)openOnboard(false);
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
