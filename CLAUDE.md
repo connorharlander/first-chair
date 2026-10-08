@@ -17,7 +17,7 @@ changes in plain language and keep commits small and clear.
   - `PH`: the six phases and doses. `TPL`: session templates. `plan(date)` builds a day.
   - `PROFILE` (localStorage `firstchair.profile`): first day, end date, days per week, minutes, gear. The plan, phase dates, calendar and copy all come from it. `DEFAULT_PROFILE` is Connor's original plan and must keep producing it exactly.
   - Onboarding shows only when a device has no profile and no logged workouts. Settings view (`set`) edits the profile; changes save and reload.
-  - Snowboard is "Coming soon" until it has sourced research. Do not add snowboard advice without real citations in `S`.
+  - Snowboard (`PROFILE.sport==="board"`): same training; `BOARD_WHY` and `BOARD_PRINCIPLES` swap in riding-specific reasons, "Ride sim" replaces "Ski sim", and shoulder work (`extrot`) is added weekly. Sources: kim2012, chauffard2026, vernillo2018, platzer2009. The audience is experienced riders: no gear or beginner safety tips. Snowboard training research is thin; do not claim more than these sources support.
   - Sync: local-first in `localStorage`, pushed to the `workout_log` table by `sync()`.
 - `config.js`: Supabase URL and **publishable** key (safe to be public).
 - `sw.js`: offline cache. **Change `VERSION` on every deploy that changes app files**, or phones keep the old version.

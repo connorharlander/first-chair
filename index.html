@@ -421,6 +421,10 @@ const S = {
   vandyk2019:["van Dyk, Behan & Whiteley 2019","Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: a systematic review and meta-analysis. Br J Sports Med 53(21):1362–1370."],
   bosquet2007:["Bosquet et al. 2007","Effects of tapering on performance: a meta-analysis. Med Sci Sports Exerc 39(8):1358–1365."],
   soligard2016:["Soligard et al. 2016","How much is too much? (Part 1) International Olympic Committee consensus statement on load in sport and risk of injury. Br J Sports Med 50(17):1030–1041."],
+  kim2012:["Kim et al. 2012","Snowboarding injuries: trends over time and comparisons with alpine skiing injuries. Am J Sports Med 40(4):770–776."],
+  chauffard2026:["Chauffard et al. 2026","To ski or not to ski? A meta-analysis of more than 750,000 upper extremity injuries comparing skiing and snowboarding. Shoulder Elbow 18(2):277–291."],
+  vernillo2018:["Vernillo, Pisoni & Thiébat 2018","Physiological and physical profile of snowboarding: a preliminary review. Front Physiol 9:770."],
+  platzer2009:["Platzer et al. 2009","Comparison of physical characteristics and performance among elite snowboarders. J Strength Cond Res 23(5):1427–1432."],
   fullagar2015:["Fullagar et al. 2015","Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise. Sports Med 45(2):161–186."]
 };
 const scholar = id => "https://scholar.google.com/scholar?q=" + encodeURIComponent(S[id][1].split(".")[0]);
@@ -484,6 +488,8 @@ const E = {
  squatjump:{n:"Squat jump",c:"pow",how:"Feet shoulder width. Dip to a quarter squat and jump as high as you can. Land soft with the knees over the toes. Reset between reps.",why:"Plyometric training raises jump height and power. You need no box, and the landing trains the same knee control.",s:["markovic2007","webster2018"]},
  rotjump:{n:"Rotational jump",c:"pow",how:"Jump and turn 90° in the air. Land soft and stick it for 2 s. Jump back to the start. Alternate directions.",why:"It trains power through the hips and trunk and quick landing control when the body turns.",s:["hydren2013","webster2018"]},
  hollow:{n:"Hollow hold",c:"bal",how:"Lie on your back. Press the lower back into the floor, lift the shoulders and legs a little. Hold. Bend the knees to make it easier.",why:"It trains the trunk to resist extension, which protects the lower back when you get pushed back on the skis.",s:["raschner2012"]},
+ riderun:{n:"Ride-run circuit",c:"pow",how:"One round, no rest inside: 30 s wall sit at riding depth → 20 s lateral bounds → 20 s low stance hold (feet at board width, knees bent, chest turned toward the front foot, small heel-to-toe rocks) → 20 s wall sit. Rest as given between rounds.",why:"A run keeps the legs loaded with little rest. In competitive riders, leg strength, leg power and aerobic fitness predicted results. This circuit trains long leg holds with quick changes in between.",s:["vernillo2018","platzer2009"]},
+ extrot:{n:"Side-lying external rotation",c:"str",how:"Lie on your side, elbow bent 90° and pinned to your side. Hold a light dumbbell (or a full water bottle). Rotate the forearm up toward the ceiling, then lower slowly.",why:"Snowboarders injure the shoulder, collarbone and wrist more often than skiers. Strength training lowers sports injury rates in general, so the plan adds direct shoulder work. No study has tested a specific exercise for snowboard injuries.",s:["kim2012","chauffard2026","lauersen2014"]},
  foamroll:{n:"Foam rolling",c:"mob",how:"Quads, IT band area, glutes, calves and upper back. 30–60 s per area. Moderate pressure.",why:"A meta-analysis found small benefits: slightly less soreness after training and a short-term gain in flexibility. Use it to feel better, not as a main recovery tool. Sleep matters far more.",s:["wiewelhove2019","fullagar2015"]}
 };
 
@@ -554,6 +560,50 @@ if(PROFILE.mins&&PROFILE.mins<45)PROFILE.mins=45;          // the main lifts alo
 function saveProfile(p){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(p))}catch(e){}}
 const END=PROFILE.end;
 // Plans run about 12 weeks at most: on-ramp week, 10 training weeks, taper. A later date starts the plan later.
+// Snowboard: same training, riding-specific reasons. Only claims the sources support.
+const BOARD_WHY={
+ backsquat:["Riding keeps the legs bent and loaded for whole runs. In competitive riders, leg strength and leg power predicted results. Strength training also prevents injury: a meta-analysis of trials found it cut sports injuries to less than one third.",["vernillo2018","platzer2009","lauersen2014"]],
+ frontsquat:["The upright torso and bent knees are close to a riding stance. It loads the quads more than the back squat and puts less load on the lower back.",["vernillo2018"]],
+ goblet:["It trains the squat with the load in front, close to an upright riding stance. Slow lowering and a hard RPE keep it challenging with lighter weights. Leg strength predicted results in competitive riders.",["platzer2009","lauersen2014"]],
+ rdl:["Strong hamstrings and glutes hold you in a balanced stance over the board and absorb landings. Strength training lowers injury rates in general.",["vernillo2018","lauersen2014"]],
+ dbrdl:["Strong hamstrings and glutes hold you in a balanced stance over the board and absorb landings. Dumbbells let you train the hip hinge at home.",["vernillo2018","lauersen2014"]],
+ bss:["Single-leg work trains each leg alone and shows side-to-side differences. Competitive alpine riders had a stronger rear leg, and researchers do not yet know if that matters, so this plan trains both sides the same.",["vernillo2018"]],
+ slrdl:["It trains hamstring strength and hip stability on one leg. Hip control helps hold the knee in line when you land or catch an edge.",["hubscher2010"]],
+ laterallunge:["It loads the adductors and glutes through a wide range, like a wide riding stance and recoveries.",["vernillo2018"]],
+ copenhagen:["Adductor strength protects the groin. A program built on this exercise reduced groin problems by about 41% in a randomised trial.",["haroy2019"]],
+ calf:["Heel-side and toe-side turns are steered through the ankles and feet. Strong calves also help you land the jumps in this plan.",["vernillo2018"]],
+ pullup:["Upper-body strength helps you push up off the snow and take falls. Snowboarders injure the shoulder and wrist more than skiers, and strength training lowers injury rates in general.",["kim2012","lauersen2014"]],
+ invrow:["It trains the upper back and arms when no pull-up bar is available. Snowboarders injure the shoulder more than skiers, and strength training lowers injury rates in general.",["kim2012","lauersen2014"]],
+ press:["Pressing strength helps you push up off the snow and protects the shoulders in a fall.",["kim2012","lauersen2014"]],
+ pushup:["Pressing strength helps you push up off the snow and protects the shoulders in a fall.",["kim2012","lauersen2014"]],
+ pallof:["Riding needs a stiff trunk while the board turns under you. Core power predicted results in competitive snowboarders. Anti-rotation work trains this stiffness.",["platzer2009"]],
+ deadbug:["It trains the deep core to hold the spine still while the limbs move. Core power predicted results in competitive snowboarders.",["platzer2009"]],
+ sideplank:["Lateral core strength links hips and trunk in side-to-side loads. Core power predicted results in competitive snowboarders.",["platzer2009"]],
+ birddog:["It trains the trunk to stay still while the limbs move. Core power predicted results in competitive snowboarders.",["platzer2009"]],
+ abwheel:["It trains the trunk to resist extension, which protects the lower back when you sit back on the tail or land a jump.",["platzer2009"]],
+ hollow:["It trains the trunk to resist extension, which protects the lower back when you sit back on the tail or land a jump.",["platzer2009"]],
+ medball:["Turns start from the hips and shoulders. It trains power through the trunk and balances the anti-rotation work. Core power predicted results in competitive riders.",["platzer2009"]],
+ rotjump:["It trains power through the hips and trunk, and landing control when the body turns, as in spins and quick direction changes.",["platzer2009","webster2018"]],
+ slalomhop:["Fast, low hops train foot speed and quick edge changes while the upper body stays quiet.",["vernillo2018"]],
+ latbound:["It trains side-to-side power and single-leg landing control. Leg power predicted results in competitive riders.",["platzer2009","markovic2007"]],
+ intervals:["Intervals raise VO2max. Aerobic fitness helps you recover between runs. Cycling interferes less with leg strength gains than running does.",["milanovic2015","vernillo2018","wilson2012"]],
+ z2:["A strong aerobic base speeds recovery between runs and helps you ride full days. Easy work adds fitness with little extra fatigue.",["seiler2010","vernillo2018"]],
+ couch:["Long hours in a bent stance tighten the hip flexors. Static stretching increases range of motion. Do it after training, not before jumps.",["behm2016"]],
+ hip9090:["It trains hip rotation, which you use to steer the board and to turn the upper body down the hill.",["behm2016"]],
+ ankle:["Good ankle range lets you get low in the stance and press onto the toe edge.",["behm2016"]],
+ tspine:["Upper-back rotation lets you look and turn down the hill while you stand sideways on the board.",["behm2016"]],
+ hamstrap:["Hamstrings get tight after squats, RDLs and Nordic curls. Static stretching after training increases range of motion, which helps you hold a balanced riding stance.",["behm2016"]],
+ bwsquat:["Slow lowering adds time under load, so bodyweight squats still build leg strength. Leg strength predicted results in competitive riders, and strength training of any kind reduces sports injuries.",["platzer2009","lauersen2014"]],
+ calfstretch:["Jumps and hops load the calves. The two positions stretch both main calf muscles. Calf range helps you flex into the boots.",["behm2016"]]};
+const BOARD=PROFILE.sport==="board";
+if(BOARD){
+  for(const id in BOARD_WHY){E[id].why=BOARD_WHY[id][0];E[id].s=BOARD_WHY[id][1];}
+  PH_SHORT.peak="Ride";
+  PH.peak.name="Ride-specific";
+  PH.peak.goal="Keep strength with low reps. Shift time to ride-like intervals, fast footwork and the ride-run circuit.";
+  PH.peak.why="Training adapts to its demands. Work that matches the time, intensity and leg load of a run transfers best to the first days on snow.";PH.peak.s=["vernillo2018","platzer2009"];
+  PH.base.why="More weekly sets build more muscle, and muscle is the base for later strength and power. Leg strength predicted results in competitive riders. Most cardio is easy, with one interval day.";PH.base.s=["schoenfeld2017","platzer2009","seiler2010"];
+}
 const START=(()=>{const t=addDays(END,-7),earliest=addDays(addDays(t,-((parse(t).getDay()+6)%7)),-77);return PROFILE.start<earliest?earliest:PROFILE.start})();
 const GEAR={gym:"full gym",db:"dumbbells",none:"no gear"};
 
@@ -633,7 +683,7 @@ const SWAPS={
  db:{backsquat:"goblet",frontsquat:"goblet",rdl:"dbrdl",pullup:"invrow",landmine:"dbpress",pallof:"birddog",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"},
  none:{backsquat:"bwsquat",frontsquat:"bwsquat",rdl:"bridge",pullup:"invrow",press:"pushup",landmine:"pikepush",row:"ytw",pallof:"birddog",suitcase:"sideplank",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"}};
 // When a session is over the time limit: shorten easy cardio first, then drop items in this order.
-const TRIM=["foamroll","suitcase","landmine","dbpress","pikepush","calf","laterallunge","slrdl","copenhagen","abwheel","hollow","deadbug","medball","rotjump","sideplank","row","ytw","slbalance","landhop","nordic","latbound","slalomhop","bss","stepdown"];
+const TRIM=["foamroll","suitcase","landmine","dbpress","pikepush","calf","laterallunge","slrdl","copenhagen","abwheel","hollow","deadbug","medball","rotjump","sideplank","row","ytw","slbalance","landhop","nordic","latbound","slalomhop","extrot","bss","stepdown"];
 function fitTime(d,cap){
   let over=d.x.reduce((a,b)=>a+b.m,0)-cap;
   if(over<=0)return;
@@ -661,6 +711,14 @@ function plan(s){
   }
   if((k==="deload"||k==="taper"||k==="onramp")&&d.r==="black")d.r="blue";
   if((k==="build"||k==="peak")&&d.short==="Ski sim")d.r="dbl";
+  if(BOARD){
+    if(d.short==="Ski sim"){d.t="Ride-Day Simulation";d.short="Ride sim";d.f="Ride-run circuits that copy the time and leg load of real runs, plus foot speed and rotational power. Ends with a quad and hip cool-down.";d.x=d.x.map(x=>x.id==="skirun"?{...x,id:"riderun"}:x);}
+    if(d.goal)d.f="Goal day. Warm up before the first run and ride easy terrain for the first hour.";
+    if(d.goal)d.short="Ride day";
+    // Shoulder work: on the upper-body day, or on the first Tue–Thu recovery day when the week has no upper day
+    const shDay=WEEK.includes("upper")?null:[2,3,4].find(i=>WEEK[i]==="recovery"),t=d.short;
+    if(!d.goal&&(t==="Upper + Z2"||(t==="Recovery"&&dow===shDay))){const i=d.x.findIndex(x=>x.cd);d.x.splice(i<0?d.x.length:i,0,it("extrot",k==="taper"||k==="deload"?"2 × 10 /side":"3 × 12 /side",5));}
+  }
   const sw=SWAPS[PROFILE.gear];
   if(sw)d.x=d.x.map(x=>sw[x.id]&&!d.x.some(y=>y.id===sw[x.id])?{...x,id:sw[x.id]}:x);
   if(PROFILE.mins&&!d.goal)fitTime(d,PROFILE.mins);
@@ -907,7 +965,11 @@ function renderProg(){
 }
 
 /* ---------------- render: science ---------------- */
-const PRINCIPLES=[
+const BOARD_PRINCIPLES={
+ "What skiing demands":["What snowboarding demands","Riding loads the legs for whole runs with short rests between them. In competitive riders, leg strength, leg power, core power and aerobic fitness predicted results. Upper-body and trunk strength have not been studied. Snowboarding research is still small, so much of this plan follows general strength and conditioning evidence.",["vernillo2018","platzer2009"]],
+ "Eccentric work and the repeated bout effect":["Eccentric work and the repeated bout effect","Slow lowering builds leg strength. A first bout of eccentric work protects muscle from damage in later bouts. The on-ramp and base weeks use this so that your first days on snow cause less soreness.",["vogt2014","mchugh2003"]],
+ "Train the knee to stay in line":["Where riders get hurt","Snowboarders injure the wrist, shoulder, collarbone and ankle more often than skiers, and tear the ACL far less (1.7% vs 17.2% of injuries in one 18-season study). Strength training lowers sports injuries in general, so the plan keeps landing and knee work and adds shoulder work. No study has tested a training program for snowboard injuries.",["kim2012","chauffard2026","lauersen2014"]]};
+const PRINCIPLES0=[
  ["What skiing demands","Skiing loads the quads and glutes in long eccentric and near-isometric contractions. Runs last about 30–120 s and use both aerobic and anaerobic energy. Long isometric holds reduce blood flow to the quads, which causes the burn. The plan trains each of these qualities.",["turnbull2009","ferguson2010","hydren2013"]],
  ["Strength prevents injury","A meta-analysis of 25 trials found strength training cut sports injuries to less than one third. Stretching alone had no clear effect. This is why strength is the core of the plan and stretching supports it.",["lauersen2014"]],
  ["Train the knee to stay in line","Programs with landing drills, balance and strength work reduce ACL injuries. In a 10-year study of young ski racers, weaker core strength was linked to ACL injury. Every week has landing, balance and core work.",["webster2018","hubscher2010","raschner2012"]],
@@ -921,14 +983,15 @@ const PRINCIPLES=[
  ["Stretch after, warm up before","Short dynamic warm-ups help performance. Long static holds before jumps can reduce power a little. Static stretching and foam rolling come after training or on recovery days.",["behm2016","wiewelhove2019"]],
  ["Effort by feel (RPE)","RPE based on reps in reserve lets you adjust loads to how you feel each day. It is a reliable way to guide strength training without testing your max.",["helms2016"]]
 ];
+const PRINCIPLES=BOARD?PRINCIPLES0.map(r=>BOARD_PRINCIPLES[r[0]]||r):PRINCIPLES0;
 function renderSci(){
   const used=new Set();ALL.forEach(s=>plan(s).x.forEach(x=>used.add(x.id)));
   const ids=Object.keys(E).filter(id=>used.has(id)&&(state.lib==="all"||E[id].c===state.lib));
   const DAYN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],order=[1,2,3,4,5,6,0];
-  const wk=order.map(i=>`${DAYN[i]} ${TPL[WEEK[i]]({...PH.base}).short.replace("Recovery","recovery")}`).join(", ");
+  const wk=order.map(i=>`${DAYN[i]} ${TPL[WEEK[i]]({...PH.base}).short.replace("Recovery","recovery").replace("Ski sim",BOARD?"Ride sim":"Ski sim")}`).join(", ");
   return `<div class="sci">
   <div class="panel intro"><span class="eyebrow">How the plan works</span><h2 style="font-size:30px;margin-top:6px">${TOTAL_WEEKS} weeks, ${PHASES.length} phases</h2>
-   <p>The plan runs from ${short(START)} to ${short(END)}. ${PHASES.length>=5?"It builds a base, rests for one week, gets heavy and explosive, turns ski-specific, and then tapers.":"Your date is close, so the plan is short: an on-ramp to learn the movements, then a taper so you arrive fresh."} Each day has one main goal, and every session ends with a mobility and stretching cool-down.</p>
+   <p>The plan runs from ${short(START)} to ${short(END)}. ${PHASES.length>=5?`It builds a base, rests for one week, gets heavy and explosive, turns ${BOARD?"ride":"ski"}-specific, and then tapers.`:"Your date is close, so the plan is short: an on-ramp to learn the movements, then a taper so you arrive fresh."} Each day has one main goal, and every session ends with a mobility and stretching cool-down.</p>
    <p><b>Your week (${PROFILE.days} training days):</b> ${wk}.</p>
    <p>${PROFILE.mins?`Sessions stay under about ${PROFILE.mins} minutes. When a session runs long, the plan shortens easy cardio first, then drops lower-priority extras.`:"Most days take 60–90 minutes. More time adds fatigue faster than fitness and raises injury risk. Use spare time for sleep, walking and food."}</p></div>
   <section><div class="sechd"><h2>Phases</h2></div>
@@ -983,12 +1046,12 @@ function topCards(){
 }
 
 function renderSettings(){
-  const d=state.draft,w=weeksLine(d.end),changed=["end","gear","days","mins"].some(k=>d[k]!==PROFILE[k]);
+  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","mins"].some(k=>d[k]!==PROFILE[k]);
   return `<div class="setv">
   <div class="panel"><span class="eyebrow">Settings</span><h2>Your plan</h2><p class="sub">Change an answer, then rebuild. Your logged workouts stay.</p>
     <div class="grp"><label class="fld" for="pend">First day on snow</label><input type="date" id="pend" value="${d.end}" min="${addDays(TODAY,7)}">
       <div class="note">Plan: ${short(START)} → ${short(d.end)}${d.end!==PROFILE.end?` (was ${short(PROFILE.end)})`:""}.</div></div>
-    <div class="grp"><span class="fld">Sport</span><div class="seg" style="--n:2"><button class="opt" aria-pressed="true">Ski</button><button class="opt" disabled>Snowboard<small>Coming soon</small></button></div></div>
+    <div class="grp"><span class="fld">Sport</span><div class="seg" style="--n:2">${optBtns("sport",[["ski","Ski"],["board","Snowboard"]],d.sport)}</div></div>
     <div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,d.gear)}</div></div>
     <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,d.days)}</div></div>
     <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,d.mins)}</div></div>
@@ -1023,16 +1086,15 @@ function renderOnboard(){
       ${w.start>TODAY?`<div class="note">That's a while away. Your plan starts ${fmt(w.start)} so you peak at the right time. Until then, stay active.</div>`:""}</div>
     <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;}
   if(n===2)body=`<div class="ob-q"><h2>How do you ride?</h2><p>This sets the sport-specific work in your plan.</p></div>
-    <div class="sport"><button class="opt" aria-pressed="true">${SKI_SVG}<b>Ski</b><small>Two skis, poles</small></button>
-      <button class="opt" disabled>${BOARD_SVG}<b>Snowboard</b><span class="soon">Coming soon</span></button></div>
-    <div class="panel" style="padding:12px 14px;font-size:13.5px">Snowboard plans are coming. They need their own research on stance, rotation and wrist safety first.</div>
+    <div class="sport"><button class="opt" data-oset="sport" data-val="ski" aria-pressed="${a.sport==="ski"}">${SKI_SVG}<b>Ski</b><small>Two skis, poles</small></button>
+      <button class="opt" data-oset="sport" data-val="board" aria-pressed="${a.sport==="board"}">${BOARD_SVG}<b>Snowboard</b><small>One board, sideways</small></button></div>
     <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;
   if(n===3)body=`<div class="ob-q"><h2>What's your setup?</h2><p>We fit the plan to your gear and your week.</p></div>
     <div class="panel"><div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,a.gear,"oset")}</div></div>
       <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,a.days,"oset")}</div></div>
       <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,a.mins,"oset")}</div></div></div>
     <div class="ob-grow"></div><button class="cta" data-ob="build">Build my plan</button>`;
-  if(n===4){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
+  if(n===4){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.sport==="board"?"Adding the ride sim and shoulder work":"Adding the ski sim and knee work",a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
   if(n===5)body=`<div class="ob-q" style="margin-top:18px"><span class="eyebrow">Preview</span><h2>That's the flow</h2><p>New users land on their plan here. This was a preview, so your plan did not change.</p></div><div class="ob-grow"></div><button class="cta" data-ob="close">Back to my plan</button>`;
   el.innerHTML=`<div class="ob${n===4?" ob-build":""}">${top}${body}</div>`;
   el.scrollTop=0;
@@ -1040,13 +1102,13 @@ function renderOnboard(){
 }
 function finishOnboard(){
   if(ob.preview){ob.step=5;renderOnboard();return;}
-  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:"ski",gear:a.gear,days:a.days,mins:a.mins});
+  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins});
   try{sessionStorage.setItem("fc.welcome","1")}catch(e){}
   state.view="today";cache();location.reload();
 }
 document.getElementById("onboard").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=+b.dataset.val||(k==="gear"?b.dataset.val:0);renderOnboard();return;}
+  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=k==="gear"||k==="sport"?b.dataset.val:+b.dataset.val;renderOnboard();return;}
   const o=b.dataset.ob;
   if(o==="next"){ob.step++;renderOnboard();}
   if(o==="back"){ob.step=Math.max(0,ob.step-1);renderOnboard();}
