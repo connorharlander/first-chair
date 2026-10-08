@@ -301,20 +301,20 @@ a.yt:hover{text-decoration:underline}
     <button class="sync" id="sync" data-view="acct">Loading…</button>
     <div class="brand">
       <h1>First Chair <span>Prep</span></h1>
-      <p>Oct 8 → Dec 15, 2026 · 6 phases · full gym</p>
+      <p id="planline">Oct 8 → Dec 15, 2026 · 6 phases · full gym</p>
     </div>
     <div class="ticket" role="group" aria-label="Countdown to first chair">
-      <span class="t-top">Lift ticket · 26/27</span>
+      <span class="t-top" id="season">Lift ticket · 26/27</span>
       <b id="countdown">–</b>
       <span id="countlabel">days to first chair</span>
-      <span class="t-foot">VALID DEC 15<br>NON-TRANSFERABLE</span>
+      <span class="t-foot"><span id="valid">VALID DEC 15</span><br>NON-TRANSFERABLE</span>
       <span class="t-bar" aria-hidden="true"></span>
     </div>
   </div>
 </header>
 <nav class="dock top" aria-label="Plan">
   <div class="wrap">
-    <div class="tlhd"><span class="eyebrow">Ten weeks · six phases</span><span class="eyebrow" id="tlnow"></span></div>
+    <div class="tlhd"><span class="eyebrow" id="tlhd">Ten weeks · six phases</span><span class="eyebrow" id="tlnow"></span></div>
     <div class="timeline" id="timeline" aria-label="Plan phases"></div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-today" data-view="today">Day</button>
@@ -406,6 +406,19 @@ const E = {
  calfstretch:{n:"Wall calf stretch",c:"mob",how:"Hands on a wall, one leg back. Press the back heel down with the knee straight for 30 s, then bend the knee for 30 s.",why:"Jumps and hops load the calves. The two positions stretch both main calf muscles. Calf range supports ankle bend in the boot.",s:["behm2016"]},
  latstretch:{n:"Child's pose lat stretch",c:"mob",how:"Kneel, sit back on the heels and reach the arms forward on the floor. Walk the hands to one side to stretch the opposite lat.",why:"Pull-ups and rows tighten the lats. Tight lats can limit overhead reach and pull the lower back into extension.",s:["behm2016"]},
  pecstretch:{n:"Doorway chest stretch",c:"mob",how:"Forearm on a door frame, elbow at shoulder height. Step through until you feel a stretch across the chest.",why:"It restores shoulder range after pressing and offsets the rounded posture of long drives and chairlift rides.",s:["behm2016"]},
+ goblet:{n:"Goblet squat",c:"str",how:"Hold one dumbbell or kettlebell at the chest, elbows down. Sit between the hips to parallel or lower. Keep the knees in line with the toes. Use the slow lowering in the dose.",why:"It trains the same squat pattern as the barbell squat with the load in front, close to the upright stance in a ski boot. Slow lowering and a hard RPE keep it challenging with lighter weights. Strength work like this is the base of the plan and cuts injury risk.",s:["hydren2013","lauersen2014"]},
+ dbrdl:{n:"Dumbbell Romanian deadlift",c:"str",how:"Hold a dumbbell in each hand at the hips, soft knees. Push the hips back until you feel a stretch in the hamstrings. Keep the back flat. Stand up by squeezing the glutes.",why:"Strong hamstrings pull the shin back and help protect the ACL when you get thrown into the back seat. Dumbbells let you train the hip hinge at home.",s:["hydren2013","webster2018"]},
+ bwsquat:{n:"Tempo bodyweight squat",c:"str",how:"Lower for 4 s, pause 1 s at the bottom, stand up. Go below parallel if you can. When it gets easy, hold a backpack with books against the chest.",why:"Slow lowering adds time under load, so bodyweight squats still build eccentric quad strength, which skiing uses most. Strength training of any kind reduces sports injuries.",s:["vogt2014","lauersen2014"]},
+ bridge:{n:"Single-leg glute bridge",c:"str",how:"Lie on your back, one foot flat, other leg straight up. Drive through the heel to lift the hips. Pause 2 s at the top. Keep the hips level.",why:"It trains the glutes and hamstrings on one side without equipment. Hip strength helps hold the knee in line on landings.",s:["hubscher2010","hydren2013"]},
+ invrow:{n:"Inverted row",c:"str",how:"Lie under a sturdy table or a bar at hip height. Grip the edge, body straight. Pull the chest up to it. Bend the knees to make it easier.",why:"It trains the upper back and arms when no pull-up bar is available. Upper-body strength keeps the program balanced and helps with falls and getting up from the snow.",s:["lauersen2014"]},
+ dbpress:{n:"Half-kneeling dumbbell press",c:"str",how:"One knee down. Press one dumbbell up with the arm on the side of the down knee. Keep the ribs down and do not lean.",why:"It trains the shoulder and resists trunk bending at the same time, which links upper body and core.",s:["raschner2012"]},
+ pushup:{n:"Push-up",c:"str",how:"Hands under the shoulders, body straight. Lower the chest to the floor, elbows at about 45°. Push up. Raise the hands on a bench to make it easier.",why:"Pressing strength helps you push up out of deep snow and protects the shoulders in a fall.",s:["lauersen2014"]},
+ pikepush:{n:"Pike push-up",c:"str",how:"Hands and feet on the floor, hips high. Bend the elbows to lower the head toward the floor between the hands. Push back up.",why:"It trains overhead pressing strength with no equipment and balances the pulling work.",s:["lauersen2014"]},
+ ytw:{n:"Prone Y-T-W raise",c:"str",how:"Lie face down, forehead on a towel. Lift the arms into a Y, then a T, then a W. Hold each 2 s. Thumbs up.",why:"It trains the upper back and the muscles that hold the shoulder blades. This balances push-ups and helps protect the shoulders.",s:["lauersen2014"]},
+ birddog:{n:"Bird dog",c:"bal",how:"On hands and knees. Reach one arm forward and the opposite leg back. Hold 2 s. Do not let the hips turn or the back sag.",why:"It trains the trunk to stay still while the limbs move, the same job the core does in a turn. In a 10-year study of young ski racers, less core strength was linked to more ACL injuries.",s:["raschner2012"]},
+ squatjump:{n:"Squat jump",c:"pow",how:"Feet shoulder width. Dip to a quarter squat and jump as high as you can. Land soft with the knees over the toes. Reset between reps.",why:"Plyometric training raises jump height and power. You need no box, and the landing trains the same knee control.",s:["markovic2007","webster2018"]},
+ rotjump:{n:"Rotational jump",c:"pow",how:"Jump and turn 90° in the air. Land soft and stick it for 2 s. Jump back to the start. Alternate directions.",why:"It trains power through the hips and trunk and quick landing control when the body turns.",s:["hydren2013","webster2018"]},
+ hollow:{n:"Hollow hold",c:"bal",how:"Lie on your back. Press the lower back into the floor, lift the shoulders and legs a little. Hold. Bend the knees to make it easier.",why:"It trains the trunk to resist extension, which protects the lower back when you get pushed back on the skis.",s:["raschner2012"]},
  foamroll:{n:"Foam rolling",c:"mob",how:"Quads, IT band area, glutes, calves and upper back. 30–60 s per area. Moderate pressure.",why:"A meta-analysis found small benefits: slightly less soreness after training and a short-term gain in flexibility. Use it to feel better, not as a main recovery tool. Sleep matters far more.",s:["wiewelhove2019","fullagar2015"]}
 };
 
@@ -456,7 +469,6 @@ const PH_ORDER = ["onramp","base","deload","build","peak","taper"];
 const PH_SHORT={onramp:"",base:"Base",deload:"Rest",build:"Build",peak:"Ski",taper:"Taper"};
 
 /* ---------------- dates ---------------- */
-const START="2026-10-08", END="2026-12-15";
 const pad=n=>String(n).padStart(2,"0");
 const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d,12)};
@@ -465,9 +477,50 @@ const diff=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const fmt=s=>{const d=parse(s);return DOW[d.getDay()]+", "+MON[d.getMonth()]+" "+d.getDate()};
+const short=s=>{const d=parse(s);return MON[d.getMonth()]+" "+d.getDate()};
+
+/* ---------------- profile: the answers that shape the plan ---------------- */
+// Defaults reproduce the original plan exactly. mins 0 means no time limit.
+const PROFILE_KEY="firstchair.profile";
+const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,mins:0};
+const PROFILE={...DEFAULT_PROFILE};
+try{const saved=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");for(const k in DEFAULT_PROFILE)if(saved[k]!==undefined)PROFILE[k]=saved[k];}catch(e){}
+if(PROFILE.mins&&PROFILE.mins<45)PROFILE.mins=45;          // the main lifts alone need about 25 min
+function saveProfile(p){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(p))}catch(e){}}
+const END=PROFILE.end;
+// Plans run about 12 weeks at most: on-ramp week, 10 training weeks, taper. A later date starts the plan later.
+const START=(()=>{const t=addDays(END,-7),earliest=addDays(addDays(t,-((parse(t).getDay()+6)%7)),-77);return PROFILE.start<earliest?earliest:PROFILE.start})();
+const GEAR={gym:"full gym",db:"dumbbells",none:"no gear"};
+
+/* phases: on-ramp to the end of the first week, Monday-aligned blocks, then an 8–14 day taper that ends on first chair */
+const mondayOf=s=>addDays(s,-((parse(s).getDay()+6)%7));
+const MON0=mondayOf(START);
+(function layoutPhases(){
+  const set=(k,from,to)=>{PH[k].from=from;PH[k].to=to};
+  PH_ORDER.forEach(k=>set(k,"",""));
+  let rampEnd=addDays(MON0,6);
+  if(diff(START,rampEnd)<2)rampEnd=addDays(rampEnd,7);     // at least 3 on-ramp days
+  const taperStart=mondayOf(addDays(END,-7));
+  const W=Math.floor(diff(addDays(rampEnd,1),taperStart)/7);
+  if(W<1){                                                  // short plan: on-ramp, then taper
+    const mid=addDays(START,Math.floor(diff(START,END)/2));
+    set("onramp",START,mid);set("taper",addDays(mid,1),END);
+  }else{
+    const peak=W>=4?1:0,deload=W>=7?1:0,rest=W-peak-deload,base=Math.ceil(rest/2),build=rest-base;
+    set("onramp",START,rampEnd);
+    let s=addDays(rampEnd,1);
+    [["base",base],["deload",deload],["build",build],["peak",peak]].forEach(([k,n])=>{if(n){set(k,s,addDays(s,n*7-1));s=addDays(s,n*7);}});
+    set("taper",taperStart,END);
+  }
+  PH.taper.why=PH.taper.why.replace("This taper is 9 days.",`This taper is ${diff(PH.taper.from,END)+1} days.`);
+})();
+const PHASES=PH_ORDER.filter(k=>PH[k].from);
 const ALL=[];for(let s=START;s<=END;s=addDays(s,1))ALL.push(s);
-const phaseOf=s=>PH_ORDER.find(k=>s>=PH[k].from&&s<=PH[k].to);
-const weekOf=s=>Math.min(9,Math.floor(diff("2026-10-05",s)/7));
+const phaseOf=s=>PH_ORDER.find(k=>PH[k].from&&s>=PH[k].from&&s<=PH[k].to);
+// Week 0 is the week the plan starts. A last week of 1–2 days counts as part of the week before.
+const LASTWEEK=(()=>{const w=Math.floor(diff(MON0,END)/7);return diff(addDays(MON0,w*7),END)<2&&w>0?w-1:w})();
+const weekOf=s=>Math.min(LASTWEEK,Math.floor(diff(MON0,s)/7));
+const TOTAL_WEEKS=Math.ceil((diff(START,END)+1)/7);
 
 /* ---------------- session builder ---------------- */
 const RATE={green:["green","Green circle · easy"],blue:["blue","Blue square · moderate"],black:["black","Black diamond · hard"],dbl:["dbl","Double black · very hard"]};
@@ -496,26 +549,56 @@ const TPL={
    it("walk",p.walk+" min",p.walk),
    cd("hip9090","2 × 6 /side",3),cd("couch","2 × 45 s /side",4),cd("hamstrap","2 × 45 s /side",3),cd("adductor","2 × 8 /side",3),cd("tspine","2 × 8 /side",3),cd("foamroll","8 min",8)]})
 };
-const WEEK=["recovery","lowerA","intervals","upper","lowerB","long","ski"]; // by getDay()
-const ONRAMP={4:"lowerB",5:"long",6:"lowerA",0:"recovery"};
+// Weekly pattern by days per week, indexed by getDay() (Sun = 0). Off days are recovery days.
+const WEEKS={
+ 6:["recovery","lowerA","intervals","upper","lowerB","long","ski"],
+ 5:["recovery","lowerA","intervals","recovery","lowerB","upper","ski"],
+ 4:["recovery","lowerA","intervals","recovery","lowerB","recovery","ski"],
+ 3:["recovery","lowerA","recovery","intervals","recovery","lowerB","recovery"]};
+const WEEK=WEEKS[PROFILE.days]||WEEKS[6];
+const ONRAMP_SWAP={ski:"lowerA",intervals:"long"};         // no hard intervals or ski sim in the on-ramp
+function templateFor(k,dow){
+  let t=WEEK[dow];
+  if(k==="onramp")t=ONRAMP_SWAP[t]||t;
+  if(k==="peak"&&PROFILE.days===3&&t==="lowerB")t="ski";   // 3-day weeks still get the ski sim in the ski-specific week
+  return t;
+}
+// Swaps when there is no full gym. Each session keeps distinct exercises.
+const SWAPS={
+ db:{backsquat:"goblet",frontsquat:"goblet",rdl:"dbrdl",pullup:"invrow",landmine:"dbpress",pallof:"birddog",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"},
+ none:{backsquat:"bwsquat",frontsquat:"bwsquat",rdl:"bridge",pullup:"invrow",press:"pushup",landmine:"pikepush",row:"ytw",pallof:"birddog",suitcase:"sideplank",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"}};
+// When a session is over the time limit: shorten easy cardio first, then drop items in this order.
+const TRIM=["foamroll","suitcase","landmine","dbpress","pikepush","calf","laterallunge","slrdl","copenhagen","abwheel","hollow","deadbug","medball","rotjump","sideplank","row","ytw","slbalance","landhop","nordic","latbound","slalomhop","bss","stepdown"];
+function fitTime(d,cap){
+  let over=d.x.reduce((a,b)=>a+b.m,0)-cap;
+  if(over<=0)return;
+  d.x=d.x.map(x=>{if(over>0&&(x.id==="z2"||x.id==="walk")&&x.m>15){const m=Math.max(15,x.m-over);over-=x.m-m;return {...x,m,dose:x.dose.replace(/^\d+/,m)};}return x;});
+  for(const id of TRIM){if(over<=0)break;const i=d.x.findIndex(x=>x.id===id&&!x.cd);if(i>=0){over-=d.x[i].m;d.x.splice(i,1);}}
+  if(over>0&&cap<=45)d.x=d.x.map(x=>{if(over>0&&x.id==="warmup"&&x.m>6){over-=x.m-6;return {...x,m:6,dose:"6 min"};}return x;});
+  const keepCd=cap<=45?1:2;
+  while(over>0&&d.x.filter(x=>x.cd).length>keepCd){const i=d.x.map(x=>!!x.cd).lastIndexOf(true);over-=d.x[i].m;d.x.splice(i,1);}
+}
 
 const planCache={};
 function plan(s){
   if(planCache[s])return planCache[s];
   const k=phaseOf(s),p=PH[k],dow=parse(s).getDay();
   let d;
-  if(s==="2026-12-14"){d={t:"Rest + travel",short:"Rest",r:"green",f:"No training. Pack, sleep, hydrate. A short walk and mobility only.",x:[
+  if(s===addDays(END,-1)&&k==="taper"){d={t:"Rest + travel",short:"Rest",r:"green",f:"No training. Pack, sleep, hydrate. A short walk and mobility only.",x:[
     it("walk","20 min",20),cd("ankle","2 × 10 /side",4),cd("hip9090","2 × 6 /side",4),cd("tspine","2 × 8 /side",3)]};}
   else if(s===END){d={t:"First chair",short:"Ski day",r:"green",f:"Goal day. Warm up before the first run and ski easy terrain for the first hour.",goal:true,x:[
     it("warmup","10 min at the base",10),it("snapdown","1 × 3",2),it("ankle","1 × 10 /side",2)]};}
-  else{d=TPL[k==="onramp"?ONRAMP[dow]:WEEK[dow]](p);}
-  if((k==="deload"||k==="taper")&&!d.goal&&s!=="2026-12-14"){
+  else{d=TPL[templateFor(k,dow)](p);}
+  if((k==="deload"||k==="taper")&&!d.goal&&s!==addDays(END,-1)){
     const drop=["slrdl","laterallunge","landmine","suitcase","landhop","calf","medball","copenhagen"];
     d.x=d.x.filter(x=>!drop.includes(x.id)).map(x=>x.id==="z2"&&x.m===20?it("z2","10 min easy cool-down",10):x);
     if(k==="taper")d.x=d.x.filter(x=>!["bss","abwheel","deadbug"].includes(x.id));
   }
   if((k==="deload"||k==="taper"||k==="onramp")&&d.r==="black")d.r="blue";
   if((k==="build"||k==="peak")&&d.short==="Ski sim")d.r="dbl";
+  const sw=SWAPS[PROFILE.gear];
+  if(sw)d.x=d.x.map(x=>sw[x.id]&&!d.x.some(y=>y.id===sw[x.id])?{...x,id:sw[x.id]}:x);
+  if(PROFILE.mins&&!d.goal)fitTime(d,PROFILE.mins);
   d.phase=k;d.week=weekOf(s);d.total=d.x.reduce((a,b)=>a+b.m,0);
   return planCache[s]=d;
 }
@@ -613,9 +696,14 @@ function renderHeader(){
   document.getElementById("countdown").textContent=left;
   document.getElementById("countlabel").textContent=left===1?"day to first chair":"days to first chair";
   const tl=document.getElementById("timeline"),tot=ALL.length;
-  tl.innerHTML=PH_ORDER.map(k=>{const n=diff(PH[k].from,PH[k].to)+1;return `<div class="ph-${k}" style="flex:${n};background:var(--ph-${k})" title="${PH[k].name}: ${fmt(PH[k].from)} – ${fmt(PH[k].to)}">${PH_SHORT[k]}</div>`}).join("")+
+  const ey=parse(END),y0=ey.getMonth()>=6?ey.getFullYear():ey.getFullYear()-1;
+  document.getElementById("planline").textContent=`${short(START)} → ${short(END)}, ${ey.getFullYear()} · ${PHASES.length} phases · ${GEAR[PROFILE.gear]}`;
+  document.getElementById("season").textContent=`Lift ticket · ${String(y0).slice(2)}/${String(y0+1).slice(2)}`;
+  document.getElementById("valid").textContent=`VALID ${short(END).toUpperCase()}`;
+  tl.innerHTML=PHASES.map(k=>{const n=diff(PH[k].from,PH[k].to)+1;return `<div class="ph-${k}" style="flex:${n};background:var(--ph-${k})" title="${PH[k].name}: ${fmt(PH[k].from)} – ${fmt(PH[k].to)}">${PH_SHORT[k]}</div>`}).join("")+
    (TODAY>=START&&TODAY<=END?`<span class="marker" style="left:calc(${(diff(START,TODAY)+.5)/tot*100}% - 1px)" title="Today"></span>`:"");
-  document.getElementById("tlnow").textContent=TODAY<START?`Starts ${fmt(START).slice(5)}`:TODAY>END?"Season is on":`Week ${Math.floor(diff(START,TODAY)/7)+1} of 10`;
+  document.getElementById("tlhd").textContent=`${TOTAL_WEEKS} weeks · ${PHASES.length} phases`;
+  document.getElementById("tlnow").textContent=TODAY<START?`Starts ${fmt(START).slice(5)}`:TODAY>END?"Season is on":`Week ${Math.floor(diff(START,TODAY)/7)+1} of ${TOTAL_WEEKS}`;
   document.querySelectorAll(".tabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===state.view));
 }
 const rateIcon=r=>`<i class="rate ${RATE[r][0]}" aria-hidden="true"></i>`;
@@ -681,7 +769,7 @@ function renderDay(){
 
 /* ---------------- render: calendar ---------------- */
 function renderCal(){
-  const months=[[2026,9],[2026,10],[2026,11]];
+  const months=[];for(let d=parse(START);ymd(d).slice(0,7)<=END.slice(0,7);d=new Date(d.getFullYear(),d.getMonth()+1,1,12))months.push([d.getFullYear(),d.getMonth()]);
   return `<div class="months">${months.map(([y,m])=>{
     const first=new Date(y,m,1,12),days=new Date(y,m+1,0).getDate(),lead=(first.getDay()+6)%7;
     let cells="";for(let i=0;i<lead;i++)cells+=`<div class="cell blank"></div>`;
@@ -710,7 +798,7 @@ function renderProg(){
   const tiles=[[full+" / "+past.length,"days fully done so far"],[(exPlan?Math.round(exDone/exPlan*100):0)+"%","of exercises done to date"],[streak,streak===1?"day streak":"day streak"],[(mins/60).toFixed(1)+" h","trained in total"]];
 
   // weekly stacked bars
-  const weeks=[];for(let w=0;w<=9;w++)weeks.push({w,done:{str:0,pow:0,car:0,bal:0,mob:0},plan:0,start:null});
+  const weeks=[];for(let w=0;w<=LASTWEEK;w++)weeks.push({w,done:{str:0,pow:0,car:0,bal:0,mob:0},plan:0,start:null});
   ALL.forEach(s=>{const W=weeks[weekOf(s)];if(!W.start)W.start=s;const d=doneMin(s);for(const k in d)W.done[k]+=d[k];W.plan+=Object.values(planMin(s)).reduce((a,b)=>a+b,0);});
   const maxV=Math.max(...weeks.map(w=>w.plan)),top=Math.ceil(maxV/120)*120;
   const Wd=640,H=240,L=44,R=8,T=12,B=34,iw=Wd-L-R,ih=H-T-B,bw=iw/weeks.length;
@@ -727,13 +815,14 @@ function renderProg(){
   // heatmap
   const cw=40,chh=24,hx=40,hy=20;let hm="";
   ["M","T","W","T","F","S","S"].forEach((d,i)=>hm+=`<text x="${hx+i*cw+cw/2-2}" y="12" text-anchor="middle">${d}</text>`);
-  for(let w=0;w<=10;w++){
-    const mon=addDays("2026-10-05",w*7);if(mon>END)break;
+  let rows=0;
+  for(let w=0;;w++){
+    const mon=addDays(MON0,w*7);if(mon>END)break;rows++;
     hm+=`<text x="${hx-8}" y="${hy+w*chh+16}" text-anchor="end">${parse(mon).getMonth()+1}/${parse(mon).getDate()}</text>`;
     for(let i=0;i<7;i++){const s=addDays(mon,i);if(s<START||s>END)continue;const f=pct(s).f,fut=s>TODAY;
       hm+=`<rect x="${hx+i*cw+2}" y="${hy+w*chh+2}" width="${cw-4}" height="${chh-4}" rx="4" fill="${f>0?"var(--done)":"var(--sunk)"}" fill-opacity="${f>0?(.25+.75*f).toFixed(2):1}" ${fut&&f===0?'stroke="var(--line)" stroke-dasharray="2 2"':""} ${s===TODAY?'stroke="var(--car)" stroke-width="2"':""}><title>${fmt(s)}: ${Math.round(f*100)}%</title></rect>`;}
   }
-  const hmH=hy+11*chh;
+  const hmH=hy+rows*chh+4;
 
   // category totals
   const ct={str:[0,0],pow:[0,0],car:[0,0],bal:[0,0],mob:[0,0]};
@@ -757,24 +846,28 @@ const PRINCIPLES=[
  ["Strength prevents injury","A meta-analysis of 25 trials found strength training cut sports injuries to less than one third. Stretching alone had no clear effect. This is why strength is the core of the plan and stretching supports it.",["lauersen2014"]],
  ["Train the knee to stay in line","Programs with landing drills, balance and strength work reduce ACL injuries. In a 10-year study of young ski racers, weaker core strength was linked to ACL injury. Every week has landing, balance and core work.",["webster2018","hubscher2010","raschner2012"]],
  ["Eccentric work and the repeated bout effect","Slow lowering builds the strength that skiing uses most. A first bout of eccentric work protects muscle from damage in later bouts. The on-ramp and base weeks use this so that your first ski days cause less soreness.",["vogt2014","mchugh2003"]],
- ["Mostly easy cardio, some hard","Endurance athletes do about 80% of training at low intensity and about 20% hard. Intervals raise VO2max. The plan has two to three easy sessions and one or two hard sessions per week.",["seiler2010","milanovic2015"]],
+ ["Mostly easy cardio, some hard","Endurance athletes do about 80% of training at low intensity and about 20% hard. Intervals raise VO2max. Most cardio in the plan is easy, with one or two hard sessions per week.",["seiler2010","milanovic2015"]],
  ["Strength and cardio together","Cardio can reduce strength gains, mainly when it is running and high volume. Cycling interferes less. The plan puts intervals on the bike or rower, and keeps hard leg days apart.",["wilson2012","ronnestad2014"]],
  ["Plyometrics turn strength into power","Jump training improves jump height and power. It starts small (pogo hops, landings) and builds to box jumps and depth jumps after you have a strength base.",["markovic2007","devillarreal2009"]],
  ["Hamstrings and adductors","Nordic curls halve hamstring injuries. The Copenhagen plank program cut groin problems by about 41%. Both are low-time, high-return additions.",["vandyk2019","vanderhorst2015","haroy2019"]],
- ["Load, recovery and sleep","Injury risk rises with big jumps in load and with poor recovery. Sleep loss reduces performance. This is why the plan uses about 60–90 min on most days with a recovery day and a deload week, not 3 hours every day.",["soligard2016","fullagar2015"]],
- ["Taper to arrive fresh","Cutting volume by 41–60% for 8–14 days while keeping intensity gives the best performance gains. The taper starts Dec 7.",["bosquet2007"]],
+ ["Load, recovery and sleep","Injury risk rises with big jumps in load and with poor recovery. Sleep loss reduces performance. This is why the plan keeps most sessions to about 60–90 min, with recovery days and a lighter week.",["soligard2016","fullagar2015"]],
+ ["Taper to arrive fresh",`Cutting volume by 41–60% for 8–14 days while keeping intensity gives the best performance gains. The taper starts ${short(PH.taper.from)}.`,["bosquet2007"]],
  ["Stretch after, warm up before","Short dynamic warm-ups help performance. Long static holds before jumps can reduce power a little. Static stretching and foam rolling come after training or on recovery days.",["behm2016","wiewelhove2019"]],
  ["Effort by feel (RPE)","RPE based on reps in reserve lets you adjust loads to how you feel each day. It is a reliable way to guide strength training without testing your max.",["helms2016"]]
 ];
 function renderSci(){
-  const ids=Object.keys(E).filter(id=>state.lib==="all"||E[id].c===state.lib);
+  const used=new Set();ALL.forEach(s=>plan(s).x.forEach(x=>used.add(x.id)));
+  const ids=Object.keys(E).filter(id=>used.has(id)&&(state.lib==="all"||E[id].c===state.lib));
+  const DAYN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],order=[1,2,3,4,5,6,0];
+  const wk=order.map(i=>`${DAYN[i]} ${TPL[WEEK[i]]({...PH.base}).short.replace("Recovery","recovery")}`).join(", ");
   return `<div class="sci">
-  <div class="panel intro"><span class="eyebrow">How the plan works</span><h2 style="font-size:30px;margin-top:6px">Ten weeks, six phases</h2>
-   <p>The plan runs from Oct 8 to Dec 15. It builds a base, rests for one week, gets heavy and explosive, turns ski-specific, and then tapers. Each day has one main goal, and every session ends with a mobility and stretching cool-down. Hard leg days are on Monday and Thursday, intervals on Tuesday, the ski simulation on Saturday, and Sunday is for recovery.</p>
-   <p>You said you can train up to 3 hours a day. The plan uses about 30–110 minutes per day instead, and most days are 60–90. More time would add fatigue faster than fitness and raise injury risk. Use spare time for sleep, walking, and food.</p></div>
+  <div class="panel intro"><span class="eyebrow">How the plan works</span><h2 style="font-size:30px;margin-top:6px">${TOTAL_WEEKS} weeks, ${PHASES.length} phases</h2>
+   <p>The plan runs from ${short(START)} to ${short(END)}. ${PHASES.length>=5?"It builds a base, rests for one week, gets heavy and explosive, turns ski-specific, and then tapers.":"Your date is close, so the plan is short: an on-ramp to learn the movements, then a taper so you arrive fresh."} Each day has one main goal, and every session ends with a mobility and stretching cool-down.</p>
+   <p><b>Your week (${PROFILE.days} training days):</b> ${wk}.</p>
+   <p>${PROFILE.mins?`Sessions stay under about ${PROFILE.mins} minutes. When a session runs long, the plan shortens easy cardio first, then drops lower-priority extras.`:"Most days take 60–90 minutes. More time adds fatigue faster than fitness and raises injury risk. Use spare time for sleep, walking and food."}</p></div>
   <section><div class="sechd"><h2>Phases</h2></div>
    <div class="panel tblwrap" style="margin-top:8px"><table class="phasetbl"><thead><tr><th>Phase</th><th>Dates</th><th>Main lifts</th><th>Goal</th></tr></thead><tbody>
-   ${PH_ORDER.map(k=>`<tr><td><i class="swatch" style="background:var(--ph-${k})"></i>${PH[k].name}</td><td class="mono">${MON[parse(PH[k].from).getMonth()]} ${parse(PH[k].from).getDate()} – ${MON[parse(PH[k].to).getMonth()]} ${parse(PH[k].to).getDate()}</td><td class="mono">${PH[k].main}</td><td>${PH[k].goal}</td></tr>`).join("")}
+   ${PHASES.map(k=>`<tr><td><i class="swatch" style="background:var(--ph-${k})"></i>${PH[k].name}</td><td class="mono">${MON[parse(PH[k].from).getMonth()]} ${parse(PH[k].from).getDate()} – ${MON[parse(PH[k].to).getMonth()]} ${parse(PH[k].to).getDate()}</td><td class="mono">${PH[k].main}</td><td>${PH[k].goal}</td></tr>`).join("")}
    </tbody></table></div></section>
   <section><div class="sechd"><h2>Principles</h2></div>
    <div class="principles" style="margin-top:8px">${PRINCIPLES.map(([t,p,s])=>`<div class="panel pr"><h3>${t}</h3><p>${p}</p>${srcList(s)}</div>`).join("")}</div></section>
