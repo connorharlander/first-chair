@@ -1,5 +1,5 @@
 // First Chair Prep service worker: works offline, never caches Supabase data calls.
-const VERSION = "fc-v1";   // change this string on each deploy to push an update
+const VERSION = "fc-v2";   // change this string on each deploy to push an update
 const SHELL = ["./", "./index.html", "./config.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"];
