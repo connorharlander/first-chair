@@ -745,6 +745,26 @@ function plan(s){
   return planCache[s]=d;
 }
 
+/* ---------------- dose reader: "3 × 8 @ RPE 7 · 3 s lower" → numbers the app can count ---------------- */
+// kind: reps | hold (seconds) | carry (metres) | rounds (circuit) | intervals | single (one checkbox: warm-up, cardio, cool-down)
+// rest: seconds between sets, following the "Read the dose" panel (2–3 min main lifts, 60–90 s the rest)
+const MAIN_LIFTS=["backsquat","frontsquat","goblet","bwsquat","boxsquat","rdl","dbrdl","pullup","invrow","press","pushup"];
+function parseDose(x){
+  const t=x.dose,o={kind:"single",sets:1,reps:null,secs:null,meters:null,side:/\/side/.test(t),rpe:null,rest:null,note:""};
+  const r=t.match(/RPE (\d+)/);if(r)o.rpe=+r[1];
+  if(x.cd||["warmup","z2","walk","foamroll"].includes(x.id)||/^\d+ min\b/.test(t))return o;
+  let m;
+  if((m=t.match(/^(\d+) × (\d+) min hard.*?\/ (\d+) min easy/))){Object.assign(o,{kind:"intervals",sets:+m[1],secs:m[2]*60,rest:m[3]*60});return o;}
+  if((m=t.match(/^(\d+) rounds × (\d+) s · (\d+) (min|s) rest/))){Object.assign(o,{kind:"rounds",sets:+m[1],secs:+m[2],rest:m[4]==="min"?m[3]*60:+m[3]});return o;}
+  if((m=t.match(/^(\d+) × (\d+) s\b/)))Object.assign(o,{kind:"hold",sets:+m[1],secs:+m[2]});
+  else if((m=t.match(/^(\d+) × (\d+) m\b/)))Object.assign(o,{kind:"carry",sets:+m[1],meters:+m[2]});
+  else if((m=t.match(/^(\d+) × (\d+)\b/)))Object.assign(o,{kind:"reps",sets:+m[1],reps:+m[2]});
+  else return o;
+  const n=t.split(" · ")[1];if(n)o.note=n.replace(/\s*\/side.*/,"");
+  o.rest=MAIN_LIFTS.includes(x.id)?150:E[x.id].c==="pow"?90:75;
+  return o;
+}
+
 /* ---------------- state + sync (local first, Supabase when signed in) ---------------- */
 const LS="firstchair.v1";
 const state={view:"today",sel:null,log:{},pending:{},lib:"all",auth:{step:"email",email:"",err:"",busy:false}};
