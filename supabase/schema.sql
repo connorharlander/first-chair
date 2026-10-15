@@ -40,3 +40,11 @@ create policy "delete own profile" on public.profiles for delete to authenticate
 -- Limits so one account cannot store very large rows.
 alter table public.workout_log add constraint note_length check (char_length(note) <= 2000);
 alter table public.workout_log add constraint done_count  check (cardinality(done) <= 60);
+
+-- Added in change 003 (supabase/003_sets.sql)
+
+-- One object per day: { exerciseId: [ {w, r, rpe, ok, t}, ... ] }
+alter table public.workout_log add column if not exists sets jsonb not null default '{}'::jsonb;
+
+-- Size limit so one day cannot store a very large object.
+alter table public.workout_log add constraint sets_size check (pg_column_size(sets) < 16000);
