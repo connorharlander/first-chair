@@ -220,6 +220,12 @@ aside .stack{display:flex;flex-direction:column;gap:16px}
 
 /* set rows */
 .sets{grid-column:1/-1;display:grid;gap:6px;margin-top:6px}
+.sugg{font-size:13px;color:var(--fg);padding:6px 9px;border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.sugg b{font-family:var(--f-mono);font-weight:600}
+.lifts{display:grid;gap:8px;margin-top:4px}
+.lift{display:grid;grid-template-columns:minmax(0,1fr) 64px auto 46px;align-items:center;gap:6px;font-size:14px}
+.lift small{display:block;font-size:11.5px;color:var(--muted)}
+.lift input{width:100%;font:500 15px/1 var(--f-mono);padding:8px 4px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--fg);text-align:center}
 .sethd{font:500 10.5px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .srow{display:flex;align-items:center;gap:6px;padding:5px 6px 5px 4px;border-radius:10px;background:var(--sunk)}
 .srow.ok{background:color-mix(in srgb,var(--done) 16%,var(--surface))}
@@ -460,6 +466,8 @@ const S = {
   platzer2009:["Platzer et al. 2009","Comparison of physical characteristics and performance among elite snowboarders. J Strength Cond Res 23(5):1427–1432."],
   grgic2018:["Grgic et al. 2018","Effects of rest interval duration in resistance training on measures of muscular strength: a systematic review. Sports Med 48(1):137–151."],
   schoenfeld2016:["Schoenfeld et al. 2016","Longer interset rest periods enhance muscle strength and hypertrophy in resistance-trained men. J Strength Cond Res 30(7):1805–1812."],
+  reynolds2006:["Reynolds, Gordon & Robergs 2006","Prediction of one repetition maximum strength from multiple repetition maximum testing and anthropometry. J Strength Cond Res 20(3):584–592."],
+  zourdos2016:["Zourdos et al. 2016","Novel resistance training-specific rating of perceived exertion scale measuring repetitions in reserve. J Strength Cond Res 30(1):267–275."],
   fullagar2015:["Fullagar et al. 2015","Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise. Sports Med 45(2):161–186."]
 };
 const scholar = id => "https://scholar.google.com/scholar?q=" + encodeURIComponent(S[id][1].split(".")[0]);
@@ -589,7 +597,7 @@ const short=s=>{const d=parse(s);return MON[d.getMonth()]+" "+d.getDate()};
 /* ---------------- profile: the answers that shape the plan ---------------- */
 // Defaults reproduce the original plan exactly. mins 0 means no time limit.
 const PROFILE_KEY="firstchair.profile";
-const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,mins:0,exp:"some",inj:[],units:"lb"};
+const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,mins:0,exp:"some",inj:[],units:"lb",lifts:{}};
 const PROFILE={...DEFAULT_PROFILE};
 try{const saved=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");for(const k in DEFAULT_PROFILE)if(saved[k]!==undefined)PROFILE[k]=saved[k];}catch(e){}
 if(PROFILE.mins&&PROFILE.mins<45)PROFILE.mins=45;          // the main lifts alone need about 25 min
@@ -1010,6 +1018,7 @@ function renderDay(){
     <div class="panel"><span class="eyebrow">Read the dose</span>
       <p style="margin-top:8px"><b>RPE</b> is effort on a 1–10 scale. For lifts, RPE 8 means you could do 2 more reps. RPE 6 means 4 more.</p>
       <p><b>3 × 8</b> means 3 sets of 8 reps. Rest 2–3 min on main lifts, 60–90 s on the rest. Tap ✓ after each set and the rest timer starts.</p>
+      <p><b>Suggested weights</b> are estimates. If a set feels harder than the target RPE, go lighter.</p>
       <p style="margin:0"><b>Missed a day?</b> Skip it and do the next one. Do not double up.</p></div>
     <div class="panel"><span class="eyebrow">Trail rating = session load</span>
       <div class="legend" style="margin-top:10px">${Object.keys(RATE).map(r=>`<div>${rateIcon(r)}${RATE[r][1]}</div>`).join("")}</div></div>
@@ -1107,6 +1116,7 @@ const PRINCIPLES0=[
  ["Taper to arrive fresh",`Cutting volume by 41–60% for 8–14 days while keeping intensity gives the best performance gains. The taper starts ${short(PH.taper.from)}.`,["bosquet2007"]],
  ["Stretch after, warm up before","Short dynamic warm-ups help performance. Long static holds before jumps can reduce power a little. Static stretching and foam rolling come after training or on recovery days.",["behm2016","wiewelhove2019"]],
  ["Rest between sets","After heavy main lifts, longer rests of 2–3 min give the biggest strength gains in trained lifters. Shorter rests of 60–120 s are enough for lighter work. The rest timer uses 2:30 for main lifts, 1:30 for jumps and 1:15 for the rest.",["grgic2018","schoenfeld2016"]],
+ ["How weights are suggested","The app estimates your one-rep max from a set you logged: the weight, the reps, and the reps you had left (RPE 9 means 1 left, RPE 7 means 3 left). It uses the standard Epley estimate. Sets of about 5 reps give the most accurate estimates. It then works back to a weight for today's reps and RPE. Accessories with no RPE target use RPE 7. Exercises you have not logged start from a guess based on a related lift, such as front squat from back squat. These guesses are rules of thumb, not research. Effort wins over the number: if a set feels harder than the target, go lighter.",["reynolds2006","zourdos2016","helms2016"]],
  ["Effort by feel (RPE)","RPE based on reps in reserve lets you adjust loads to how you feel each day. It is a reliable way to guide strength training without testing your max.",["helms2016"]]
 ];
 const PRINCIPLES=BOARD?PRINCIPLES0.map(r=>BOARD_PRINCIPLES[r[0]]||r):PRINCIPLES0;
@@ -1175,6 +1185,14 @@ function topCards(){
   return out;
 }
 
+function liftInputs(lifts,gear,units,attr){
+  const A=ANCHORS[gear];if(!A)return `<p class="note" style="margin:0">No weights are needed with no gear.</p>`;
+  return `<div class="lifts">${Object.entries(A).map(([k,[id,name,hand]])=>{const l=(lifts||{})[k]||{};return `<div class="lift"><span>${name}${hand?`<small>${hand}</small>`:""}</span>
+    <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="${units}" value="${l.w??""}" data-${attr}="${k}:w" aria-label="${name} weight in ${units}"><span class="su">×</span>
+    <input type="number" inputmode="numeric" min="1" max="20" placeholder="reps" value="${l.r??""}" data-${attr}="${k}:r" aria-label="${name} reps"></div>`}).join("")}</div>
+    <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">A recent hard set with about 1 rep left. Sets of 3–8 reps give the best estimates. Skip any you don't know: you will find that weight in week 1.</p>`;
+}
+const cleanLifts=(l,u)=>{const o={};for(const k in l||{}){const w=+l[k].w,r=+l[k].r;if(w>0&&r>0)o[k]={w,r:Math.min(20,Math.round(r)),wu:l[k].wu||u};}return o;};
 const EXP_OPTS=[["new","New to lifting"],["some","I lift regularly"]];
 function aboutYou(a,attr,multi){
   return `<div class="grp"><span class="fld">Lifting experience</span><div class="seg" style="--n:2">${optBtns("exp",EXP_OPTS,a.exp,attr)}</div></div>
@@ -1182,7 +1200,7 @@ function aboutYou(a,attr,multi){
     <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">This swaps or removes exercises that load that area. It is not treatment. If something hurts now, see a physio before you start.</p></div>`;
 }
 function renderSettings(){
-  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","mins","exp","inj","units"].some(k=>JSON.stringify(d[k])!==JSON.stringify(PROFILE[k]));
+  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","mins","exp","inj","units","lifts"].some(k=>JSON.stringify(d[k])!==JSON.stringify(PROFILE[k]));
   return `<div class="setv">
   <div class="panel"><span class="eyebrow">Settings</span><h2>Your plan</h2><p class="sub">Change an answer, then rebuild. Your logged workouts stay.</p>
     <div class="grp"><label class="fld" for="pend">First day on snow</label><input type="date" id="pend" value="${d.end}" min="${addDays(TODAY,7)}">
@@ -1192,6 +1210,7 @@ function renderSettings(){
     <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,d.days)}</div></div>
     <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,d.mins)}</div></div>
     <div class="grp"><span class="fld">Weights in</span><div class="seg" style="--n:2">${optBtns("units",[["lb","Pounds (lb)"],["kg","Kilograms (kg)"]],d.units||"lb")}</div></div>
+    <div class="grp"><span class="fld">Your numbers (optional)</span>${liftInputs(d.lifts,d.gear,d.units||"lb","pl")}</div>
     ${aboutYou(d,"pset","pmulti")}
     ${d.gear!==PROFILE.gear||JSON.stringify(d.inj)!==JSON.stringify(PROFILE.inj)?`<div class="note warn">Changing gear swaps some exercises on past days too, so a few old checkmarks may stop showing.</div>`:""}
     <div class="actions" style="margin-top:16px"><button class="btn" data-act="psave" ${changed?"":"disabled"}>Rebuild my plan</button></div></div>
@@ -1205,13 +1224,14 @@ function renderSettings(){
 
 const ob={step:0,preview:false,a:{}};
 function openOnboard(preview){
-  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,mins:60,exp:"some",inj:[]};
+  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,mins:60,exp:"some",inj:[],units:"lb",lifts:{}};
   const el=document.getElementById("onboard");el.hidden=false;document.body.style.overflow="hidden";renderOnboard();
 }
 function closeOnboard(){document.getElementById("onboard").hidden=true;document.body.style.overflow="";}
 function renderOnboard(){
   const el=document.getElementById("onboard"),a=ob.a,n=ob.step;
-  const top=n>=1&&n<=4?`<div class="ob-top"><button class="ob-back" data-ob="back" aria-label="Back">‹</button><div class="ob-steps">${[1,2,3,4].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div><span class="ob-n">${n} of 4</span></div>`:"";
+  const ORDER=[1,2,3,...(a.gear==="none"?[]:[4]),5],pos=ORDER.indexOf(n);
+  const top=pos>=0?`<div class="ob-top"><button class="ob-back" data-ob="back" aria-label="Back">‹</button><div class="ob-steps">${ORDER.map((_,i)=>`<i class="${i<=pos?"on":""}"></i>`).join("")}</div><span class="ob-n">${pos+1} of ${ORDER.length}</span></div>`:"";
   let body="";
   if(n===0)body=`<div class="ob-q ob-hero" style="margin-top:18px"><span class="eyebrow">Grand Targhee · Alta, Wyoming</span><h1>First Chair <span>Prep</span></h1><p>Get your legs ready for first chair. A plan built around your first day on snow.</p></div>
     <div class="ob-grow"></div><div class="panel" style="display:grid;gap:10px"><button class="cta" data-ob="next">Build my plan</button><p style="margin:0;text-align:center;font-size:12.5px;color:var(--muted)">About a minute. No account needed.</p></div>
@@ -1232,34 +1252,40 @@ function renderOnboard(){
       <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,a.days,"oset")}</div></div>
       <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,a.mins,"oset")}</div></div></div>
     <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;
-  if(n===4)body=`<div class="ob-q"><h2>Anything we should know?</h2><p>Optional. It sets your starting point.</p></div>
+  if(n===4)body=`<div class="ob-q"><h2>Know your numbers?</h2><p>Optional. It sets your starting weights.</p></div>
+    <div class="panel"><div class="grp"><span class="fld">Weights in</span><div class="seg" style="--n:2">${optBtns("units",[["lb","Pounds (lb)"],["kg","Kilograms (kg)"]],a.units,"oset")}</div></div>
+      <div class="grp"><span class="fld">A recent hard set</span>${liftInputs(a.lifts,a.gear,a.units,"ol")}</div></div>
+    <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button><button class="linkbtn" data-ob="skipnums">Skip for now</button>`;
+  if(n===5)body=`<div class="ob-q"><h2>Anything we should know?</h2><p>Optional. It sets your starting point.</p></div>
     <div class="panel">${aboutYou(a,"oset","omulti")}</div>
     <div class="ob-grow"></div><button class="cta" data-ob="build">Build my plan</button><button class="linkbtn" data-ob="skipabout">Skip for now</button>`;
-  if(n===5){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.sport==="board"?"Adding the ride sim and shoulder work":"Adding the ski sim and knee work",a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`,...(a.exp==="new"?["Setting a gentler start"]:[]),...(a.inj.length?[`Working around your ${a.inj.map(k=>INJURY[k].label.toLowerCase()).join(" and ")}`]:[])].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
-  if(n===6)body=`<div class="ob-q" style="margin-top:18px"><span class="eyebrow">Preview</span><h2>That's the flow</h2><p>New users land on their plan here. This was a preview, so your plan did not change.</p></div><div class="ob-grow"></div><button class="cta" data-ob="close">Back to my plan</button>`;
-  el.innerHTML=`<div class="ob${n===5?" ob-build":""}">${top}${body}</div>`;
+  if(n===6){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.sport==="board"?"Adding the ride sim and shoulder work":"Adding the ski sim and knee work",a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`,...(a.exp==="new"?["Setting a gentler start"]:[]),...(a.inj.length?[`Working around your ${a.inj.map(k=>INJURY[k].label.toLowerCase()).join(" and ")}`]:[]),...(Object.keys(cleanLifts(a.lifts,a.units)).length?["Setting your starting weights"]:[])].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
+  if(n===7)body=`<div class="ob-q" style="margin-top:18px"><span class="eyebrow">Preview</span><h2>That's the flow</h2><p>New users land on their plan here. This was a preview, so your plan did not change.</p></div><div class="ob-grow"></div><button class="cta" data-ob="close">Back to my plan</button>`;
+  el.innerHTML=`<div class="ob${n===6?" ob-build":""}">${top}${body}</div>`;
   el.scrollTop=0;
-  if(n===5){const lis=[...el.querySelectorAll("#oblist li")];lis.forEach((li,i)=>setTimeout(()=>li.classList.add("done"),380*(i+1)));setTimeout(finishOnboard,380*lis.length+700);}
+  if(n===6){const lis=[...el.querySelectorAll("#oblist li")];lis.forEach((li,i)=>setTimeout(()=>li.classList.add("done"),380*(i+1)));setTimeout(finishOnboard,380*lis.length+700);}
 }
 function finishOnboard(){
-  if(ob.preview){ob.step=6;renderOnboard();return;}
-  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins,exp:a.exp,inj:a.inj});
+  if(ob.preview){ob.step=7;renderOnboard();return;}
+  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins,exp:a.exp,inj:a.inj,units:a.units,lifts:a.gear==="none"?{}:cleanLifts(a.lifts,a.units)});
   try{sessionStorage.setItem("fc.welcome","1")}catch(e){}
   state.view="today";cache();location.reload();
 }
 document.getElementById("onboard").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=k==="gear"||k==="sport"||k==="exp"?b.dataset.val:+b.dataset.val;renderOnboard();return;}
+  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=["gear","sport","exp","units"].includes(k)?b.dataset.val:+b.dataset.val;renderOnboard();return;}
   if(b.dataset.omulti){const v=b.dataset.val;ob.a.inj=ob.a.inj.includes(v)?ob.a.inj.filter(x=>x!==v):[...ob.a.inj,v];renderOnboard();return;}
   const o=b.dataset.ob;
-  if(o==="next"){ob.step++;renderOnboard();}
-  if(o==="back"){ob.step=Math.max(0,ob.step-1);renderOnboard();}
-  if(o==="build"){ob.step=5;renderOnboard();}
-  if(o==="skipabout"){ob.a.exp="some";ob.a.inj=[];ob.step=5;renderOnboard();}
+  const ORDER=[1,2,3,...(ob.a.gear==="none"?[]:[4]),5],pos=ORDER.indexOf(ob.step);
+  if(o==="next"){ob.step=ob.step===0?1:ORDER[pos+1]||6;renderOnboard();}
+  if(o==="back"){ob.step=pos>0?ORDER[pos-1]:0;renderOnboard();}
+  if(o==="skipnums"){ob.a.lifts={};ob.step=5;renderOnboard();}
+  if(o==="build"){ob.step=6;renderOnboard();}
+  if(o==="skipabout"){ob.a.exp="some";ob.a.inj=[];ob.step=6;renderOnboard();}
   if(o==="close"){closeOnboard();}
   if(o==="signin"){saveProfile({...DEFAULT_PROFILE},false);closeOnboard();state.view="acct";render();}
 });
-document.getElementById("onboard").addEventListener("change",e=>{if(e.target.id==="obdate"&&e.target.value){ob.a.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;renderOnboard();}});
+document.getElementById("onboard").addEventListener("change",e=>{const ol=e.target.dataset&&e.target.dataset.ol;if(ol){const [k,f]=ol.split(":");ob.a.lifts={...ob.a.lifts,[k]:{...(ob.a.lifts[k]||{}),[f]:e.target.value===""?"":+e.target.value,wu:ob.a.units}};return;}if(e.target.id==="obdate"&&e.target.value){ob.a.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;renderOnboard();}});
 
 /* ---------------- sets and the rest timer ---------------- */
 // Exercises that take a weight. Dumbbell weights are per hand.
@@ -1271,10 +1297,52 @@ function lastSet(id,before){
   for(const d of days){const a=((state.log[d]||{}).sets||{})[id];if(a){const r=[...a].reverse().find(z=>z&&z.ok&&z.w!==""&&z.w!=null);if(r)return r;}}
   return null;
 }
-// The day's set rows for one exercise: saved values, else last time's weight and the planned reps
+// Suggested weights: estimate a one-rep max (Epley, plus reps in reserve), then work back to today's reps and RPE
+const ANCHORS={
+ gym:{squat:["backsquat","Back squat"],hinge:["rdl","Romanian deadlift"],press:["press","Dumbbell bench press","per hand"],pull:["row","One-arm dumbbell row","per hand"]},
+ db:{squat:["goblet","Goblet squat","one weight"],hinge:["dbrdl","Dumbbell RDL","per hand"],press:["press","Dumbbell bench press","per hand"],pull:["row","One-arm dumbbell row","per hand"]}};
+// Starting guesses from a related lift until you log the exercise yourself (rules of thumb, kept low on purpose)
+const REL={
+ gym:{frontsquat:["backsquat",.80],boxsquat:["backsquat",.85],goblet:["backsquat",.35],bss:["backsquat",.18],laterallunge:["backsquat",.22],dbrdl:["rdl",.40],slrdl:["rdl",.22],dbpress:["press",.60]},
+ db:{boxsquat:["goblet",1],bss:["goblet",.45],laterallunge:["goblet",.60],slrdl:["dbrdl",.55],dbpress:["press",.60]}};
+const BARBELL=new Set(["backsquat","frontsquat","rdl"]);
+const PERHAND=new Set(["press","row","dbrdl","bss","slrdl","dbpress"]);
+const e1rm=(w,r,rir)=>w*(1+(r+rir)/30);
+function fromLog(id,before){
+  const days=Object.keys(state.log).filter(d=>d<before).sort().reverse();
+  for(const d of days){
+    const a=((state.log[d]||{}).sets||{})[id];if(!a)continue;
+    const x=plan(d).x.find(y=>y.id===id),tr=x?parseDose(x).rpe:null;let best=0;
+    // sets you rated count first; unrated sets are assumed to match the target RPE
+    const done=a.filter(z=>z&&z.ok&&+z.w>0&&+z.r>0),rated=done.filter(z=>z.rpe);
+    (rated.length?rated:done).forEach(z=>{const rir=z.rpe?10-z.rpe:tr?10-tr:3;best=Math.max(best,e1rm(+toUnit(+z.w,z.wu),+z.r,rir));});
+    if(best)return {e1:best,src:"log"};
+  }
+  return null;
+}
+function fromNumbers(id){
+  const A=ANCHORS[PROFILE.gear];if(!A)return null;
+  for(const k in A)if(A[k][0]===id){const l=(PROFILE.lifts||{})[k];if(l&&+l.w>0&&+l.r>0)return {e1:e1rm(+toUnit(+l.w,l.wu),+l.r,1),src:"numbers"};}
+  return null;
+}
+function estimate(id,day){
+  const own=fromLog(id,day)||fromNumbers(id);if(own)return own;
+  const rel=(REL[PROFILE.gear]||{})[id];if(!rel)return null;
+  const base=fromLog(rel[0],day)||fromNumbers(rel[0]);
+  return base?{e1:base.e1*rel[1],src:"guess",from:rel[0]}:null;
+}
+function suggest(s,x){
+  if(!LOAD.has(x.id)||PROFILE.gear==="none")return null;
+  const d=parseDose(x);if(d.kind!=="reps")return null;
+  const e=estimate(x.id,s);if(!e)return null;
+  const p=d.rpe||7,raw=e.e1/(1+(d.reps+10-p)/30),kg=UNIT()==="kg",bar=BARBELL.has(x.id)||(x.id==="boxsquat"&&PROFILE.gear==="gym");
+  const step=bar?(kg?2.5:5):(kg?2:5),min=bar?(kg?20:45):(kg?2:5);
+  return {...e,w:Math.max(min,Math.round(raw/step)*step),rpe:p};
+}
+// The day's set rows for one exercise: saved values, else the suggested weight (or last time's) and the planned reps
 function setsFor(s,x){
-  const d=parseDose(x),e=entry(s),saved=(e.sets||{})[x.id]||[],all=e.done.includes(x.id),prev=LOAD.has(x.id)?lastSet(x.id,s):null;
-  return Array.from({length:d.sets},(_,i)=>{const r={w:prev?toUnit(prev.w,prev.wu):"",wu:UNIT(),r:d.reps,rpe:null,ok:false,...(saved[i]||{})};if(all)r.ok=true;r.w=toUnit(r.w,r.wu);r.wu=UNIT();return r;});
+  const d=parseDose(x),e=entry(s),saved=(e.sets||{})[x.id]||[],all=e.done.includes(x.id),prev=LOAD.has(x.id)?lastSet(x.id,s):null,sg=suggest(s,x);
+  return Array.from({length:d.sets},(_,i)=>{const r={w:sg?sg.w:prev?toUnit(prev.w,prev.wu):"",wu:UNIT(),r:d.reps,rpe:null,ok:false,...(saved[i]||{})};if(all)r.ok=true;r.w=toUnit(r.w,r.wu);r.wu=UNIT();return r;});
 }
 function putSet(s,id,i,patch){
   const x=plan(s).x.find(y=>y.id===id);if(!x)return [];
@@ -1287,7 +1355,10 @@ function setRows(s,x){
   const d=parseDose(x);if(d.kind==="single")return "";
   const rows=setsFor(s,x),u=UNIT(),ld=LOAD.has(x.id)&&PROFILE.gear!=="none",timed=["hold","rounds","intervals"].includes(d.kind);
   const fixed=d.kind==="hold"||d.kind==="rounds"?`${d.secs} s`:d.kind==="carry"?`${d.meters} m`:d.kind==="intervals"?`${d.secs/60} min hard`:"";
-  return `<div class="sets"><div class="sethd">${d.kind==="intervals"?`${d.sets} rounds · ${mmss(d.rest)} easy between`:`Rest ${mmss(d.rest)} between sets`}${d.side?" · do both sides, then tap ✓":""}</div>${rows.map((r,i)=>`<div class="srow${r.ok?" ok":""}">
+  const sg=ld&&d.kind==="reps"?suggest(s,x):null,ph=PERHAND.has(x.id)?" per hand":"";
+  const why=sg?{log:"from your last session",numbers:"from your numbers",guess:`starting guess from your ${sg.from?E[sg.from].n.toLowerCase():"lifts"}`}[sg.src]:"";
+  const tip=sg?`<div class="sugg">Suggested <b>${sg.w} ${u}${ph}</b> · ${why}</div>`:ld&&d.kind==="reps"?`<div class="sugg">No weight yet. In set 1, build up to a weight that feels like RPE ${d.rpe||7} for ${d.reps}${d.side?" per side":""}, then log it.</div>`:"";
+  return `<div class="sets">${tip}<div class="sethd">${d.kind==="intervals"?`${d.sets} rounds · ${mmss(d.rest)} easy between`:`Rest ${mmss(d.rest)} between sets`}${d.side?" · do both sides, then tap ✓":""}</div>${rows.map((r,i)=>`<div class="srow${r.ok?" ok":""}">
     <span class="sn">${i+1}</span>
     ${ld?`<input class="sw" type="number" inputmode="decimal" step="0.5" min="0" value="${r.w??""}" placeholder="—" data-sf="${x.id}:${i}:w" aria-label="Weight in ${u}, set ${i+1}"><span class="su">${u}</span>`:""}
     ${d.kind==="reps"?`${ld?`<span class="sx">×</span>`:""}<input class="sr" type="number" inputmode="numeric" min="0" max="99" value="${r.r??""}" data-sf="${x.id}:${i}:r" aria-label="Reps, set ${i+1}"><span class="su">reps</span>`:`<span class="sfix">${fixed}</span>`}
@@ -1378,13 +1449,16 @@ app.addEventListener("click",e=>{
   if(a==="clear"){state.log[s]={done:[],rpe:null,note:"",sets:{}};save(s);render();}
   if(t.dataset.pmulti){const v=t.dataset.val,cur=state.draft.inj||[];state.draft.inj=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v];render();return;}
   if(t.dataset.pset){const k=t.dataset.pset,v=t.dataset.val;state.draft[k]=k==="days"||k==="mins"?+v:v;render();return;}
-  if(a==="psave"){saveProfile({...PROFILE,...state.draft});state.view="today";cache();location.reload();}
+  if(a==="psave"){state.draft.lifts=cleanLifts(state.draft.lifts,state.draft.units);saveProfile({...PROFILE,...state.draft});state.view="today";cache();location.reload();}
   if(a==="restart"){saveProfile({...PROFILE,...state.draft,start:TODAY});state.view="today";cache();location.reload();}
   if(a==="replay"){openOnboard(true);}
   if(a==="welcomeok"){try{sessionStorage.removeItem("fc.welcome")}catch(e){}render();}
   if(a==="hsdismiss"){try{localStorage.setItem("fc.hsdone","1")}catch(e){}render();}
 });
 app.addEventListener("change",e=>{if(e.target.id==="pend"&&e.target.value){state.draft.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;e.target.blur();render();}});
+app.addEventListener("change",e=>{const pl=e.target.dataset&&e.target.dataset.pl;if(!pl)return;
+  const [k,f]=pl.split(":"),L={...(state.draft.lifts||{})};L[k]={...(L[k]||{}),[f]:e.target.value===""?"":+e.target.value,wu:state.draft.units||"lb"};state.draft.lifts=L;
+  const b=app.querySelector("[data-act=psave]");if(b)b.disabled=false;});
 app.addEventListener("change",e=>{const f=e.target.dataset&&e.target.dataset.sf;if(!f)return;
   const [id,i,k]=f.split(":"),s=state.sel,raw=e.target.value.trim(),v=raw===""?(k==="w"?"":null):Math.max(0,+raw);
   const rows=putSet(s,id,+i,{[k]:v,...(k==="w"?{wu:UNIT()}:{}),...(k!=="rpe"?{ed:true}:{})});
