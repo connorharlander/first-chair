@@ -396,6 +396,14 @@ input[type=date]{width:100%;font:500 16px var(--f-mono);padding:12px;border-radi
 .hs-steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);font:700 15px/1 var(--f-display)}
 .hs-steps small{display:block;color:var(--muted);font-size:12.5px}
 
+/* what's new */
+.news-day{margin-top:14px}
+.news-day h3{margin:0 0 6px}
+.news{padding:10px 0;border-top:1px solid var(--line)}
+.news b{font-family:var(--f-display);font-size:20px;font-weight:700}
+.news ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.news li{margin-bottom:3px}
+
 /* settings */
 .setv{display:grid;gap:16px;margin-top:20px;max-width:620px}
 .setv .panel{padding:18px}
@@ -1194,6 +1202,54 @@ function renderSci(){
   </div>`;
 }
 
+/* ---------------- what's new ---------------- */
+// Newest first. Add an entry for every update people can see. id must be unique.
+const CHANGELOG=[
+ {id:"2026-10-15-core",d:"2026-10-15",t:"A core video every day",items:[
+  "Every day now has a 5–15 min ski-specific core video. Tap Watch here to play it in the app.",
+  "Each video fits the day. On days with heavy lifts or jump landings it comes last, so a tired core does not affect your landings. On easier days it comes first.",
+  "Light weeks use a 5-minute core warm-up.",
+  "Snowboarders get snowboard-specific videos.",
+  "New: this What's new page."]},
+ {id:"2026-10-15-weights",d:"2026-10-15",t:"Suggested weights",items:[
+  "Each lift shows a suggested weight and fills it into your sets.",
+  "Suggestions come from your last session, your numbers, or a starting guess from a related lift.",
+  "Add your numbers in Settings, or skip them and find your weight in set 1.",
+  "If a set feels harder than planned, the next suggestion comes down."]},
+ {id:"2026-10-15-sets",d:"2026-10-15",t:"Log every set, with a rest timer",items:[
+  "Each lift has one row per set: weight, reps, optional RPE, and a check.",
+  "Checking a set starts the rest timer. Holds and circuits have a start button.",
+  "The timer keeps time when your phone locks and beeps when rest is over.",
+  "Choose pounds or kilograms in Settings."]},
+ {id:"2026-10-15-accounts",d:"2026-10-15",t:"Accounts and synced settings",items:[
+  "Anyone can create a free account to sync their plan across devices.",
+  "Your settings now sync between your phone and laptop.",
+  "Forgot password and Delete my synced data are on the sign-in screen."]},
+ {id:"2026-10-15-adjust",d:"2026-10-15",t:"Plans that fit your experience and injuries",items:[
+  "New to lifting? The plan starts gentler.",
+  "Past knee, lower back, shoulder or wrist injury? The plan swaps or removes exercises that load that area."]},
+ {id:"2026-10-08-board",d:"2026-10-08",t:"Snowboard plans",items:[
+  "Choose snowboard for a ride sim, riding-specific reasons and weekly shoulder work."]},
+ {id:"2026-10-08-onboard",d:"2026-10-08",t:"Welcome screens and Settings",items:[
+  "New users answer a few questions and get their own plan.",
+  "Change your first day on snow, days per week, time per session or gear in Settings.",
+  "Steps to put the app on your iPhone Home Screen."]},
+ {id:"2026-10-08-profile",d:"2026-10-08",t:"Plans built from your answers",items:[
+  "The plan fits any first day on snow, 3–6 training days, a time limit, and your gear."]},
+ {id:"2026-10-07-look",d:"2026-10-07",t:"A new look",items:[
+  "The Tetons from Grand Targhee behind the app, a lift-ticket countdown, and frosted panels."]},
+ {id:"2026-10-07-launch",d:"2026-10-07",t:"First Chair Prep launches",items:[
+  "A 10-week ski conditioning plan with daily workouts, a calendar, progress charts and the science behind it."]}];
+const newsSeen=()=>lsGet("fc.newsSeen");
+function markNewsSeen(){try{localStorage.setItem("fc.newsSeen",CHANGELOG[0].id)}catch(e){}}
+function renderNews(){
+  markNewsSeen();
+  const days=[...new Set(CHANGELOG.map(c=>c.d))];
+  return `<div class="setv"><div class="panel"><span class="eyebrow">What's new</span><h2>Updates to First Chair Prep</h2><p class="sub">Newest first.</p>
+    ${days.map(d=>`<section class="news-day"><h3 class="eyebrow">${fmt(d)}, ${parse(d).getFullYear()}</h3>${CHANGELOG.filter(c=>c.d===d).map(c=>`<div class="news"><b>${c.t}</b><ul>${c.items.map(i=>`<li>${i}</li>`).join("")}</ul></div>`).join("")}</section>`).join("")}
+    <div class="actions" style="margin-top:8px"><button class="btn ghost" data-view="today">Back to today</button></div></div></div>`;
+}
+
 /* ---------------- onboarding, settings, home screen ---------------- */
 state.draft={...PROFILE};
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
@@ -1224,6 +1280,9 @@ function topCards(){
       <p>${START===TODAY?`Day 1 is today: <b>${p.t}</b>.`:`Day 1 is ${fmt(START)}. Until then, stay active and sleep well.`} Tap a workout to see how and why. Check it off when you finish.</p>
       <div class="actions"><button class="btn" data-act="welcomeok">Got it</button><button class="btn ghost" data-view="set">Change settings</button></div></div>`;}
   const didWork=Object.values(state.log).some(e=>e.done&&e.done.length);
+  if(newsSeen()!==CHANGELOG[0].id&&Object.keys(state.log).length&&!ssGet("fc.welcome")){const c=CHANGELOG[0];
+    out+=`<div class="panel topcard"><span class="eyebrow">New · ${fmt(c.d)}</span><h3>${c.t}</h3><p>${c.items[0]}</p>
+      <div class="actions"><button class="btn" data-view="news">See what's new</button><button class="btn ghost" data-act="newsok">Dismiss</button></div></div>`;}
   if(sb&&!user&&didWork&&!lsGet("fc.savedone"))
     out+=`<div class="panel topcard"><span class="eyebrow">Nice work</span><h3>Save your progress?</h3><p>Create a free account to keep your plan and check-offs on your phone and laptop. Skip it and everything stays on this device.</p>
       <div class="actions"><button class="btn" data-act="gosignup">Create account</button><button class="btn ghost" data-act="savedismiss">Not now</button></div></div>`;
@@ -1265,6 +1324,8 @@ function renderSettings(){
   <div class="panel"><span class="eyebrow">Start date</span><h2>Started ${short(START)}</h2><p class="sub">Start over to begin again from day 1 today. Logged workouts stay on their dates.</p>
     <button class="btn ghost" data-act="restart" ${START===TODAY?"disabled":""}>Start over from today</button></div>
   ${isIOS&&!isInstalled?`<div class="panel"><span class="eyebrow">iPhone</span><h2>Put it on your Home Screen</h2>${hsSteps}</div>`:""}
+  <div class="panel"><span class="eyebrow">What's new · ${fmt(CHANGELOG[0].d)}</span><h2>${CHANGELOG[0].t}</h2><p class="sub">${CHANGELOG[0].items[0]}</p>
+    <button class="btn ghost" data-view="news">See all updates</button></div>
   <div class="panel"><span class="eyebrow">Welcome screens</span><h2>See what new users see</h2><p class="sub">A preview only. It does not change your plan.</p>
     <button class="btn ghost" data-act="replay">Replay the welcome screens</button></div>
   </div>`;
@@ -1317,7 +1378,7 @@ function finishOnboard(){
   if(ob.preview){ob.step=7;renderOnboard();return;}
   const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins,exp:a.exp,inj:a.inj,units:a.units,lifts:a.gear==="none"?{}:cleanLifts(a.lifts,a.units)});
   try{sessionStorage.setItem("fc.welcome","1")}catch(e){}
-  state.view="today";cache();location.reload();
+  markNewsSeen();state.view="today";cache();location.reload();
 }
 document.getElementById("onboard").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
@@ -1480,7 +1541,7 @@ function render(){
   const openWhy=[...app.querySelectorAll("details.why[open]")].map(d=>d.closest("li")?.querySelector("[data-tick]")?.dataset.tick);
   const ae=document.activeElement;
   if(ae&&app.contains(ae)&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"))return; // do not re-render while typing
-  app.innerHTML=state.view==="today"?renderDay():state.view==="cal"?renderCal():state.view==="prog"?renderProg():state.view==="acct"?renderAcct():state.view==="set"?renderSettings():renderSci();
+  app.innerHTML=state.view==="today"?renderDay():state.view==="cal"?renderCal():state.view==="prog"?renderProg():state.view==="acct"?renderAcct():state.view==="set"?renderSettings():state.view==="news"?renderNews():renderSci();
   openWhy.forEach(id=>{const b=app.querySelector(`[data-tick="${id}"]`);if(b)b.closest("li").querySelector("details").open=true;});
 }
 document.querySelectorAll(".top").forEach(el=>el.addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(!b)return;state.view=b.dataset.view;cache();render();window.scrollTo(0,0);}));
@@ -1516,6 +1577,7 @@ app.addEventListener("click",e=>{
   if(a==="restart"){saveProfile({...PROFILE,...state.draft,start:TODAY});state.view="today";cache();location.reload();}
   if(a==="replay"){openOnboard(true);}
   if(a==="welcomeok"){try{sessionStorage.removeItem("fc.welcome")}catch(e){}render();}
+  if(a==="newsok"){markNewsSeen();render();}
   if(a==="hsdismiss"){try{localStorage.setItem("fc.hsdone","1")}catch(e){}render();}
 });
 app.addEventListener("change",e=>{if(e.target.id==="pend"&&e.target.value){state.draft.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;e.target.blur();render();}});
