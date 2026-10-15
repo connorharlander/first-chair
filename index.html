@@ -240,6 +240,17 @@ aside .stack{display:flex;flex-direction:column;gap:16px}
 .sok{margin-left:auto;flex:none;width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--fg) 28%,transparent);background:var(--surface);color:transparent;font:700 16px/1 var(--f-body);padding:0}
 .sok[aria-pressed="true"]{background:var(--done);border-color:var(--done);color:var(--accent-fg)}
 
+/* core video */
+.btn.watch{margin-top:8px;padding:8px 14px;font-size:14px}
+#vsheet{position:fixed;inset:0;z-index:40;background:rgba(5,12,24,.62);display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0px)}
+#vsheet[hidden]{display:none!important}
+.vs-in{width:100%;max-width:720px;background:var(--surface);color:var(--fg);border-radius:18px 18px 0 0;padding:14px 14px 18px;display:grid;gap:12px;box-shadow:0 -20px 40px -20px rgba(0,0,0,.5)}
+@media (min-width:760px){#vsheet{align-items:center}.vs-in{border-radius:18px}}
+.vs-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.vs-hd b{display:block;font:700 22px/1.1 var(--f-display);margin-top:4px}
+.vs-frame{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
+.vs-frame iframe{display:block;width:100%;height:100%;border:0}
+
 /* rest timer bar */
 #tbar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:25;max-width:560px;margin:0 auto;border-radius:16px;overflow:hidden;background:var(--fg);color:var(--bg);box-shadow:0 18px 40px -16px rgba(0,0,0,.55)}
 #tbar[data-phase="work"]{background:var(--flag);color:#fff}
@@ -428,6 +439,10 @@ input[type=date]{width:100%;font:500 16px var(--f-mono);padding:12px;border-radi
 
 <main class="wrap" id="app"></main>
 <div id="onboard" hidden></div>
+<div id="vsheet" hidden role="dialog" aria-modal="true" aria-labelledby="vs-t"><div class="vs-in">
+  <div class="vs-hd"><div><span class="eyebrow" id="vs-ch"></span><b id="vs-t"></b></div><button class="btn ghost" data-vclose>Close</button></div>
+  <div class="vs-frame"></div>
+  <div class="actions"><button class="btn" data-vdone>Done · check it off</button></div></div></div>
 <div id="tbar" hidden role="timer" aria-live="polite"><div class="tb-in"><div class="tb-txt"><span class="tb-l"></span><b class="tb-t"></b><span class="tb-s"></span></div>
   <div class="tb-b"><button data-t="-15" aria-label="15 seconds less">−15</button><button data-t="30" aria-label="30 seconds more">+30</button><button data-t="skip">Skip</button></div></div><i class="tb-p"></i></div>
 
@@ -468,6 +483,8 @@ const S = {
   schoenfeld2016:["Schoenfeld et al. 2016","Longer interset rest periods enhance muscle strength and hypertrophy in resistance-trained men. J Strength Cond Res 30(7):1805–1812."],
   reynolds2006:["Reynolds, Gordon & Robergs 2006","Prediction of one repetition maximum strength from multiple repetition maximum testing and anthropometry. J Strength Cond Res 20(3):584–592."],
   zourdos2016:["Zourdos et al. 2016","Novel resistance training-specific rating of perceived exertion scale measuring repetitions in reserve. J Strength Cond Res 30(1):267–275."],
+  curi2024:["Curi et al. 2024","The effects of core muscle fatigue on lower limbs and trunk during single-leg drop landing: a comparison between recreational runners with and without dynamic knee valgus. Knee 50:96–106."],
+  vermeulen2023:["Vermeulen et al. 2023","The effect of fatigue on trunk and pelvic jump-landing biomechanics in view of lower extremity loading: a systematic review. J Hum Kinet 86:73–95."],
   fullagar2015:["Fullagar et al. 2015","Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise. Sports Med 45(2):161–186."]
 };
 const scholar = id => "https://scholar.google.com/scholar?q=" + encodeURIComponent(S[id][1].split(".")[0]);
@@ -534,6 +551,7 @@ const E = {
  riderun:{n:"Ride-run circuit",c:"pow",how:"One round, no rest inside: 30 s wall sit at riding depth → 20 s lateral bounds → 20 s low stance hold (feet at board width, knees bent, chest turned toward the front foot, small heel-to-toe rocks) → 20 s wall sit. Rest as given between rounds.",why:"A run keeps the legs loaded with little rest. In competitive riders, leg strength, leg power and aerobic fitness predicted results. This circuit trains long leg holds with quick changes in between.",s:["vernillo2018","platzer2009"]},
  extrot:{n:"Side-lying external rotation",c:"str",how:"Lie on your side, elbow bent 90° and pinned to your side. Hold a light dumbbell (or a full water bottle). Rotate the forearm up toward the ceiling, then lower slowly.",why:"Snowboarders injure the shoulder, collarbone and wrist more often than skiers. Strength training lowers sports injury rates in general, so the plan adds direct shoulder work. No study has tested a specific exercise for snowboard injuries.",s:["kim2012","chauffard2026","lauersen2014"]},
  boxsquat:{n:"Box squat",c:"str",how:"Stand in front of a box or bench at a height where your knee feels fine. Sit back until you touch it lightly, then stand up. Hold dumbbells or a bar if you have them. Lower the box as it gets easier.",why:"A box sets the depth, so you keep training the legs while you control how far the knee bends. Strength training of any kind reduces sports injuries.",s:["lauersen2014"]},
+ core:{n:"Core video",c:"bal",how:"Tap Watch here to play it in the app. Follow along, then tap Done.",why:"Core strength links the hips and trunk in turns. In a 10-year study of young ski racers, weaker core strength was linked to ACL injury. On days with heavy lifts or jump landings the video comes last, because a tired core may let the knee cave in on single-leg landings. A review found smaller effects, so this is the cautious choice.",s:["raschner2012","curi2024","vermeulen2023"]},
  foamroll:{n:"Foam rolling",c:"mob",how:"Quads, IT band area, glutes, calves and upper back. 30–60 s per area. Moderate pressure.",why:"A meta-analysis found small benefits: slightly less soreness after training and a short-term gain in flexibility. Use it to feel better, not as a main recovery tool. Sleep matters far more.",s:["wiewelhove2019","fullagar2015"]}
 };
 
@@ -606,6 +624,7 @@ const END=PROFILE.end;
 // Plans run about 12 weeks at most: on-ramp week, 10 training weeks, taper. A later date starts the plan later.
 // Snowboard: same training, riding-specific reasons. Only claims the sources support.
 const BOARD_WHY={
+ core:["Core power predicted results in competitive snowboarders. On days with heavy lifts or jump landings the video comes last, because a tired core may let the knee cave in on single-leg landings. A review found smaller effects, so this is the cautious choice.",["platzer2009","curi2024","vermeulen2023"]],
  backsquat:["Riding keeps the legs bent and loaded for whole runs. In competitive riders, leg strength and leg power predicted results. Strength training also prevents injury: a meta-analysis of trials found it cut sports injuries to less than one third.",["vernillo2018","platzer2009","lauersen2014"]],
  frontsquat:["The upright torso and bent knees are close to a riding stance. It loads the quads more than the back squat and puts less load on the lower back.",["vernillo2018"]],
  goblet:["It trains the squat with the load in front, close to an upright riding stance. Slow lowering and a hard RPE keep it challenging with lighter weights. Leg strength predicted results in competitive riders.",["platzer2009","lauersen2014"]],
@@ -753,6 +772,32 @@ function fitTime(d,cap){
   while(over>0&&d.x.filter(x=>x.cd).length>keepCd){const i=d.x.map(x=>!!x.cd).lastIndexOf(true);over-=d.x[i].m;d.x.splice(i,1);}
 }
 
+/* Core videos (YouTube, played in the app). Checked: length 5–15 min and embedding allowed.
+   Heavy-lift and jump-landing days put the video last (curi2024, vermeulen2023); other days put it first. */
+const CORE_VIDS={
+ getskifit:{id:"3XMEXcLZo2M",ch:"Get Ski Fit",t:"Essential daily core",m:15},
+ oatblast:{id:"AdR23XQHCkU",ch:"Outdoor Adventure Training",t:"10-minute core blaster for skiers",m:13},
+ jack15:{id:"yeAN2-8vENk",ch:"Jack's Ski Club",t:"15 min core for skiers",m:15},
+ jack10:{id:"2MnG-GwfFc4",ch:"Jack's Ski Club",t:"10 min core strength for skiers",m:11},
+ jackadv:{id:"Auw5mdZ0IrA",ch:"Jack's Ski Club",t:"Advanced 10 min core for skiers",m:10},
+ sync:{id:"yMh-p13hAvM",ch:"SYNC Performance",t:"10 minute core for skiers",m:12},
+ wake:{id:"auX4JdW-UjI",ch:"MrandMrsMuscle",t:"5 minute core warm-up",m:5},
+ gentle:{id:"cIO_BJNi_8k",ch:"MrandMrsMuscle",t:"5 minute core warm-up, beginner friendly",m:5},
+ mdeasy:{id:"i1It7aXTfgI",ch:"Mobility Duo",t:"Easy core workout for snowboarders",m:12},
+ mdcore:{id:"fEvG-AB8WUY",ch:"Mobility Duo",t:"Core strengthening for snowboarders",m:9,start:139},
+ md5:{id:"UCJbVkdEGcs",ch:"Mobility Duo",t:"5 must-do core exercises for snowboarders",m:5,start:91},
+ taevis:{id:"fIhNKzj0h5U",ch:"Taevis Kapalka",t:"10-minute snowboarder core",m:11}};
+const CORE_PLAN={
+ ski:{"Lower A":["getskifit","end"],"Lower B":["oatblast","end"],"Ski sim":["jack15","end"],"Intervals":["jack10","end"],"Upper + Z2":["sync","start"],"Long Z2":["jackadv","start"],"Recovery":["gentle","start"]},
+ board:{"Lower A":["getskifit","end"],"Lower B":["taevis","end"],"Ride sim":["mdcore","end"],"Intervals":["md5","end"],"Upper + Z2":["mdeasy","start"],"Long Z2":["oatblast","start"],"Recovery":["gentle","start"]}};
+function addCore(d,k){
+  const light=k==="onramp"||k==="deload"||k==="taper"||d.goal||d.short==="Rest";
+  let [key,where]=(CORE_PLAN[BOARD?"board":"ski"][d.short])||["wake","start"];
+  if(light){key=d.short==="Recovery"?"gentle":"wake";where="start";}
+  const v=CORE_VIDS[key],item={...it("core",`${v.m} min video · ${v.ch}`,v.m),vid:key};
+  if(where==="end"){const i=d.x.findIndex(x=>x.cd);d.x.splice(i<0?d.x.length:i,0,item);}
+  else{const i=d.x[0]&&d.x[0].id==="warmup"?1:0;d.x.splice(i,0,item);}
+}
 const planCache={};
 function plan(s){
   if(planCache[s])return planCache[s];
@@ -783,6 +828,7 @@ function plan(s){
   INJ.forEach(k=>{const r=INJURY[k];
     d.x=d.x.filter(x=>!r.drop.includes(x.id)).flatMap(x=>{const to=r.swap[x.id];if(!to)return [x];return d.x.some(y=>y.id===to)?[]:[{...x,id:to}]});});
   if(PROFILE.mins&&!d.goal)fitTime(d,PROFILE.mins);
+  addCore(d,k);   // on top of the time limit
   d.phase=k;d.week=weekOf(s);d.total=d.x.reduce((a,b)=>a+b.m,0);
   return planCache[s]=d;
 }
@@ -996,8 +1042,9 @@ function renderDay(){
         <li class="ex${on?" isdone":""}">
           <button class="tick" role="checkbox" aria-checked="${on}" aria-label="Mark ${ex.n} done" data-tick="${x.id}">${check}</button>
           <div class="exmain">
-            <div class="exname"><i class="cat c-${ex.c}" title="${CATS[ex.c]}"></i><span class="nm">${ex.n}</span></div>
-            <div class="dose">${x.dose} <em>· ~${x.m} min</em>${ytUrl(x.id)?` · ${ytLink(x.id)}`:""}</div>
+            <div class="exname"><i class="cat c-${ex.c}" title="${CATS[ex.c]}"></i><span class="nm">${x.id==="core"?`Core · ${CORE_VIDS[x.vid].t}`:ex.n}</span></div>
+            <div class="dose">${x.dose}${x.id==="core"?"":` <em>· ~${x.m} min</em>`}${ytUrl(x.id)?` · ${ytLink(x.id)}`:""}</div>
+            ${x.id==="core"?`<button class="btn watch" data-watch="${x.vid}">▶ Watch here</button>`:""}
             <details class="why"><summary>How and why</summary>
               <div class="whybody"><h4>How</h4><p>${ex.how}</p><h4>Why</h4><p>${ex.why}</p><h4>Sources</h4>${srcList(ex.s)}</div>
             </details>
@@ -1115,6 +1162,7 @@ const PRINCIPLES0=[
  ["Load, recovery and sleep","Injury risk rises with big jumps in load and with poor recovery. Sleep loss reduces performance. This is why the plan keeps most sessions to about 60–90 min, with recovery days and a lighter week.",["soligard2016","fullagar2015"]],
  ["Taper to arrive fresh",`Cutting volume by 41–60% for 8–14 days while keeping intensity gives the best performance gains. The taper starts ${short(PH.taper.from)}.`,["bosquet2007"]],
  ["Stretch after, warm up before","Short dynamic warm-ups help performance. Long static holds before jumps can reduce power a little. Static stretching and foam rolling come after training or on recovery days.",["behm2016","wiewelhove2019"]],
+ ["Where the core video goes","Every day has a 5–15 min core video. On days with heavy lifts or jump landings it comes last. In one study, a tiring core workout made recreational runners' knees cave in more on single-leg landings. A review of 21 studies found smaller effects, so this is the cautious choice. On easier days the video comes first. Light weeks use a 5-minute core warm-up. The videos are from YouTube coaches and are not part of this plan's research.",["curi2024","vermeulen2023"]],
  ["Rest between sets","After heavy main lifts, longer rests of 2–3 min give the biggest strength gains in trained lifters. Shorter rests of 60–120 s are enough for lighter work. The rest timer uses 2:30 for main lifts, 1:30 for jumps and 1:15 for the rest.",["grgic2018","schoenfeld2016"]],
  ["How weights are suggested","The app estimates your one-rep max from a set you logged: the weight, the reps, and the reps you had left (RPE 9 means 1 left, RPE 7 means 3 left). It uses the standard Epley estimate. Sets of about 5 reps give the most accurate estimates. It then works back to a weight for today's reps and RPE. Accessories with no RPE target use RPE 7. Exercises you have not logged start from a guess based on a related lift, such as front squat from back squat. These guesses are rules of thumb, not research. Effort wins over the number: if a set feels harder than the target, go lighter.",["reynolds2006","zourdos2016","helms2016"]],
  ["Effort by feel (RPE)","RPE based on reps in reserve lets you adjust loads to how you feel each day. It is a reliable way to guide strength training without testing your max.",["helms2016"]]
@@ -1287,6 +1335,20 @@ document.getElementById("onboard").addEventListener("click",e=>{
 });
 document.getElementById("onboard").addEventListener("change",e=>{const ol=e.target.dataset&&e.target.dataset.ol;if(ol){const [k,f]=ol.split(":");ob.a.lifts={...ob.a.lifts,[k]:{...(ob.a.lifts[k]||{}),[f]:e.target.value===""?"":+e.target.value,wu:ob.a.units}};return;}if(e.target.id==="obdate"&&e.target.value){ob.a.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;renderOnboard();}});
 
+/* ---------------- core video player ---------------- */
+function openVideo(key){
+  const v=CORE_VIDS[key],el=document.getElementById("vsheet");
+  el.querySelector("#vs-ch").textContent=v.ch;el.querySelector("#vs-t").textContent=v.t;
+  el.querySelector(".vs-frame").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0&playsinline=1&autoplay=1${v.start?`&start=${v.start}`:""}" title="${esc(v.t)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  el.hidden=false;document.body.style.overflow="hidden";wake();
+}
+function closeVideo(){const el=document.getElementById("vsheet");el.querySelector(".vs-frame").innerHTML="";el.hidden=true;document.body.style.overflow="";}
+document.getElementById("vsheet").addEventListener("click",e=>{
+  if(e.target.id==="vsheet"||e.target.closest("[data-vclose]")){closeVideo();return;}
+  if(e.target.closest("[data-vdone]")){const s=state.sel,en={...entry(s)};en.done=(en.done||[]).filter(z=>z!=="core").concat("core");state.log[s]=en;save(s);closeVideo();render();}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("vsheet").hidden)closeVideo();});
+
 /* ---------------- sets and the rest timer ---------------- */
 // Exercises that take a weight. Dumbbell weights are per hand.
 const LOAD=new Set(["backsquat","frontsquat","goblet","boxsquat","rdl","dbrdl","bss","stepdown","slrdl","laterallunge","calf","pullup","press","row","landmine","dbpress","suitcase","extrot"]);
@@ -1357,7 +1419,7 @@ function setRows(s,x){
   const fixed=d.kind==="hold"||d.kind==="rounds"?`${d.secs} s`:d.kind==="carry"?`${d.meters} m`:d.kind==="intervals"?`${d.secs/60} min hard`:"";
   const sg=ld&&d.kind==="reps"?suggest(s,x):null,ph=PERHAND.has(x.id)?" per hand":"";
   const why=sg?{log:"from your last session",numbers:"from your numbers",guess:`starting guess from your ${sg.from?E[sg.from].n.toLowerCase():"lifts"}`}[sg.src]:"";
-  const tip=sg?`<div class="sugg">Suggested <b>${sg.w} ${u}${ph}</b> · ${why}</div>`:ld&&d.kind==="reps"?`<div class="sugg">No weight yet. In set 1, build up to a weight that feels like RPE ${d.rpe||7} for ${d.reps}${d.side?" per side":""}, then log it.</div>`:"";
+  const tip=sg?`<div class="sugg">Suggested <b>${sg.w} ${u}${ph}</b> · ${why}</div>`:ld&&d.kind==="reps"&&x.id!=="pullup"?`<div class="sugg">No weight yet. In set 1, build up to a weight that feels like RPE ${d.rpe||7} for ${d.reps}${d.side?" per side":""}, then log it.</div>`:"";
   return `<div class="sets">${tip}<div class="sethd">${d.kind==="intervals"?`${d.sets} rounds · ${mmss(d.rest)} easy between`:`Rest ${mmss(d.rest)} between sets`}${d.side?" · do both sides, then tap ✓":""}</div>${rows.map((r,i)=>`<div class="srow${r.ok?" ok":""}">
     <span class="sn">${i+1}</span>
     ${ld?`<input class="sw" type="number" inputmode="decimal" step="0.5" min="0" value="${r.w??""}" placeholder="—" data-sf="${x.id}:${i}:w" aria-label="Weight in ${u}, set ${i+1}"><span class="su">${u}</span>`:""}
@@ -1427,6 +1489,7 @@ app.addEventListener("click",e=>{
   const s=state.sel;
   if(t.dataset.tick&&parseDose(plan(s).x.find(x=>x.id===t.dataset.tick)).kind!=="single"){const id=t.dataset.tick,on=entry(s).done.includes(id),x=plan(s).x.find(y=>y.id===id);setsFor(s,x).forEach((r,i)=>putSet(s,id,i,{ok:!on,t:!on?(r.t||new Date().toISOString()):null}));render();return;}
   if(t.dataset.sok){const [id,i]=t.dataset.sok.split(":"),x=plan(s).x.find(y=>y.id===id),r=setsFor(s,x)[+i];putSet(s,id,+i,{ok:!r.ok,t:!r.ok?new Date().toISOString():null});if(!r.ok)startRest(s,x,+i);render();return;}
+  if(t.dataset.watch){openVideo(t.dataset.watch);return;}
   if(t.dataset.sgo){const [id,i]=t.dataset.sgo.split(":");startWork(s,plan(s).x.find(y=>y.id===id),+i);return;}
   if(t.dataset.tick){const en={...entry(s)};en.done=en.done.slice();const id=t.dataset.tick,i=en.done.indexOf(id);i>=0?en.done.splice(i,1):en.done.push(id);state.log[s]=en;save(s);render();return;}
   if(t.dataset.rpe){const en={...entry(s)};const n=+t.dataset.rpe;en.rpe=en.rpe===n?null:n;state.log[s]=en;save(s);render();return;}
