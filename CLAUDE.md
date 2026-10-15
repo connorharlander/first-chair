@@ -7,7 +7,7 @@ changes in plain language and keep commits small and clear.
 ## Stack
 - Static files only. No build step, no framework, no package.json.
 - Hosting: Vercel, auto-deploys on every push to `main`. Live at https://first-chair-taupe.vercel.app
-- Data and auth: Supabase (project `qnazlsqsrtjbsovhakal`). Email + password sign-in. One user. Sign-ups are off.
+- Data and auth: Supabase (project `qnazlsqsrtjbsovhakal`). Email + password accounts with email confirmation. Sign-ups are controlled in the Supabase dashboard (Authentication settings), not in code.
 - Supabase JS is loaded from jsDelivr, pinned to `@supabase/supabase-js@2.110.0`.
 
 ## Files
@@ -19,11 +19,12 @@ changes in plain language and keep commits small and clear.
   - Experience (`exp`: new/some) and injuries (`inj`: knee/back/shoulder/wrist) adjust doses and swap or drop exercises (`INJURY`). They are not treatment; keep the physio note.
   - Onboarding shows only when a device has no profile and no logged workouts. Settings view (`set`) edits the profile; changes save and reload.
   - Snowboard (`PROFILE.sport==="board"`): same training; `BOARD_WHY` and `BOARD_PRINCIPLES` swap in riding-specific reasons, "Ride sim" replaces "Ski sim", and shoulder work (`extrot`) is added weekly. Sources: kim2012, chauffard2026, vernillo2018, platzer2009. The audience is experienced riders: no gear or beginner safety tips. Snowboard training research is thin; do not claim more than these sources support.
-  - Sync: local-first in `localStorage`, pushed to the `workout_log` table by `sync()`.
+  - Sync: local-first in `localStorage`, pushed to the `workout_log` table by `sync()`. Settings sync through `profiles` in `syncProfile()`: the newest copy (`PROFILE.u`) wins, and a newer copy from another device reloads the plan. A missing `profiles` table is skipped quietly.
+  - Account view: sign in, create account, forgot password, set new password (`PASSWORD_RECOVERY`), and delete synced data.
 - `config.js`: Supabase URL and **publishable** key (safe to be public).
 - `sw.js`: offline cache. **Change `VERSION` on every deploy that changes app files**, or phones keep the old version.
 - `manifest.webmanifest`, `icons/`: home-screen install.
-- `supabase/schema.sql`: table + Row Level Security. If the schema changes, update this file and tell Connor to run the change in the Supabase SQL Editor.
+- `supabase/schema.sql`: tables + Row Level Security (full current schema). Numbered files like `002_profiles_and_limits.sql` are one-time changes Connor runs in the SQL Editor. If the schema changes, update this file and tell Connor to run the change in the Supabase SQL Editor.
 - `vercel.json`: no-cache headers for `sw.js` and `config.js`.
 
 ## Rules

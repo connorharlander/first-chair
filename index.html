@@ -85,6 +85,7 @@ button.sync.warn{border-color:var(--pow);background:rgba(120,60,10,.35)}
 .acct form{display:grid;gap:10px;margin-top:8px}
 .acct input{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
 .acct .err{color:var(--car);font-size:14px}
+.acct .note{display:block;margin-top:0}
 .acct dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 16px;font-size:14px}
 .acct dt{color:var(--muted)}.acct dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .wrap{max-width:1040px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px));padding-block:0 48px}
@@ -558,7 +559,7 @@ const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym
 const PROFILE={...DEFAULT_PROFILE};
 try{const saved=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");for(const k in DEFAULT_PROFILE)if(saved[k]!==undefined)PROFILE[k]=saved[k];}catch(e){}
 if(PROFILE.mins&&PROFILE.mins<45)PROFILE.mins=45;          // the main lifts alone need about 25 min
-function saveProfile(p){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(p))}catch(e){}}
+function saveProfile(p,stamp=true){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(stamp?{...p,u:new Date().toISOString()}:p))}catch(e){}}
 const END=PROFILE.end;
 // Plans run about 12 weeks at most: on-ramp week, 10 training weeks, taper. A later date starts the plan later.
 // Snowboard: same training, riding-specific reasons. Only claims the sources support.
@@ -782,10 +783,30 @@ async function sync(){
       const l=state.log[r.day];
       if(!l||!l.u||Date.parse(r.updated_at)>=Date.parse(l.u))state.log[r.day]={done:r.done||[],rpe:r.rpe,note:r.note||"",u:r.updated_at};
     });
+    await syncProfile();
     lastSync=new Date();
   }catch(e){syncErr=e.message||String(e);}
   syncing=false;cache();setSync();render();
   if(again){again=false;sync();}
+}
+// Settings sync: the newest copy wins. A newer copy from another device rebuilds the plan here.
+async function syncProfile(){
+  try{
+    let local=null;try{local=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null")}catch(e){}
+    const {data,error}=await sb.from("profiles").select("data,updated_at").maybeSingle();
+    if(error)throw error;
+    const lu=local&&local.u?Date.parse(local.u):0,ru=data?Date.parse(data.updated_at):0;
+    if(data&&ru>lu){
+      const next={...DEFAULT_PROFILE,...data.data,u:data.updated_at};
+      const changed=Object.keys(DEFAULT_PROFILE).some(k=>JSON.stringify(next[k])!==JSON.stringify(PROFILE[k]));
+      saveProfile(next,false);
+      if(changed){state.view="today";cache();location.reload();}
+    }else if(local&&local.u&&lu>ru){
+      const d={};for(const k in DEFAULT_PROFILE)d[k]=local[k]!==undefined?local[k]:DEFAULT_PROFILE[k];
+      const {error:e2}=await sb.from("profiles").upsert({user_id:user.id,data:d,updated_at:local.u});
+      if(e2)throw e2;
+    }
+  }catch(e){console.warn("Settings sync skipped:",e.message||e);}   // e.g. the profiles table is not set up yet
 }
 function setSync(){
   const el=document.getElementById("sync");if(!el)return;
@@ -800,7 +821,7 @@ function setSync(){
 }
 if(sb){
   sb.auth.getSession().then(({data})=>{user=data.session?data.session.user:null;setSync();if(user)sync();});
-  sb.auth.onAuthStateChange((ev,session)=>{user=session?session.user:null;setSync();if(user)setTimeout(sync,0);if(state.view==="acct")setTimeout(render,0);});
+  sb.auth.onAuthStateChange((ev,session)=>{user=session?session.user:null;if(ev==="PASSWORD_RECOVERY"){state.auth.mode="newpw";state.view="acct";setTimeout(render,0);}setSync();if(user)setTimeout(sync,0);if(state.view==="acct")setTimeout(render,0);});
 }
 window.addEventListener("online",sync);window.addEventListener("offline",setSync);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;const t=ymd(new Date());if(t!==TODAY){TODAY=t;render();}sync();});
@@ -808,22 +829,50 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState!==
 /* ---------------- account view ---------------- */
 const esc=v=>String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 function renderAcct(){
-  const A=state.auth,n=Object.keys(state.pending).length;
-  if(!sb)return `<div class="panel acct"><h2>Sync is not set up</h2><p>Your progress saves on this device only. To sync across devices, add your Supabase project URL and anon key to <span class="mono">config.js</span> and deploy again.</p></div>`;
+  const A=state.auth,n=Object.keys(state.pending).length,mode=A.mode||"signin";
+  if(!sb)return `<div class="panel acct"><h2>Sync is not set up</h2><p>Your progress saves on this device only.</p></div>`;
+  const msg=`${A.err?`<span class="err">${esc(A.err)}</span>`:""}${A.msg?`<span class="note">${esc(A.msg)}</span>`:""}`;
+  if(user&&mode==="newpw")return `<div class="panel acct"><h2>Set a new password</h2><form id="pwform"><label for="pw" class="eyebrow">New password</label><input id="pw" type="password" autocomplete="new-password" minlength="8" required>${msg}<div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>Save password</button></div></form></div>`;
   if(user)return `<div class="panel acct"><h2>Sync</h2><dl><dt>Signed in</dt><dd>${esc(user.email||"")}</dd><dt>Last sync</dt><dd>${lastSync?lastSync.toLocaleTimeString():"Not yet"}</dd><dt>Waiting</dt><dd>${n} day${n===1?"":"s"}</dd>${syncErr?`<dt>Error</dt><dd class="err">${esc(syncErr)}</dd>`:""}</dl>
-    <div class="actions"><button class="btn" data-act="syncnow">Sync now</button><button class="btn ghost" data-act="signout">Sign out</button></div></div>`;
-  return `<div class="panel acct"><h2>Sign in to sync</h2><p>Your progress saves on this device now. Sign in to keep it in sync on your phone and laptop. Use the email and password you set up in Supabase.</p>
-    <form id="loginform"><label for="email" class="eyebrow">Email</label><input id="email" type="email" autocomplete="username" required value="${esc(A.email)}">
-    <label for="pw" class="eyebrow">Password</label><input id="pw" type="password" autocomplete="current-password" required>
-    ${A.err?`<span class="err">${esc(A.err)}</span>`:""}<div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>${A.busy?"Signing in…":"Sign in"}</button></div></form></div>`;
+    ${msg}<div class="actions"><button class="btn" data-act="syncnow">Sync now</button><button class="btn ghost" data-act="signout">Sign out</button></div>
+    <details style="margin-top:18px"><summary class="eyebrow" style="cursor:pointer">Delete my synced data</summary>
+      <p style="margin-top:10px;font-size:14px">This removes your logged workouts and settings from the server. This device keeps its copy. You cannot undo it.</p>
+      <div class="actions">${A.confirmDel?`<button class="btn" style="background:var(--car);border-color:var(--car)" data-act="delconfirm">Yes, delete it</button><button class="btn ghost" data-act="delcancel">Cancel</button>`:`<button class="btn ghost" data-act="delask">Delete my synced data</button>`}</div></details></div>`;
+  const tabs=`<div class="seg" style="--n:2;margin:4px 0 14px"><button class="opt" data-amode="signin" aria-pressed="${mode==="signin"}">Sign in</button><button class="opt" data-amode="signup" aria-pressed="${mode==="signup"}">Create account</button></div>`;
+  if(mode==="forgot")return `<div class="panel acct"><h2>Reset your password</h2><p>We will email you a link to set a new password.</p>
+    <form id="forgotform"><label for="email" class="eyebrow">Email</label><input id="email" type="email" autocomplete="username" required value="${esc(A.email)}">${msg}
+    <div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>Send link</button><button class="btn ghost" type="button" data-amode="signin">Back</button></div></form></div>`;
+  const up=mode==="signup";
+  return `<div class="panel acct"><h2>${up?"Create a free account":"Sign in to sync"}</h2><p>${up?"Keep your plan and check-offs on your phone and laptop.":"Your progress saves on this device. Sign in to keep it in sync on your phone and laptop."}</p>${tabs}
+    <form id="loginform" data-mode="${mode}"><label for="email" class="eyebrow">Email</label><input id="email" type="email" autocomplete="username" required value="${esc(A.email)}">
+    <label for="pw" class="eyebrow">Password${up?" (8+ characters)":""}</label><input id="pw" type="password" autocomplete="${up?"new-password":"current-password"}" ${up?'minlength="8"':""} required>
+    ${msg}<div class="actions"><button class="btn" type="submit" ${A.busy?"disabled":""}>${A.busy?"One moment…":up?"Create account":"Sign in"}</button>${up?"":`<button class="btn ghost" type="button" data-amode="forgot">Forgot password?</button>`}</div></form></div>`;
 }
+const authMsg=e=>{const m=e.message||String(e);
+  if(/invalid login credentials/i.test(m))return "Email or password is wrong.";
+  if(/signups? not allowed|signup.*disabled/i.test(m))return "New accounts are not open yet.";
+  if(/already registered|already exists/i.test(m))return "That email already has an account. Sign in instead.";
+  if(/email not confirmed/i.test(m))return "Confirm your email first. Check your inbox for the link.";
+  if(/rate limit|too many/i.test(m))return "Too many tries. Wait a few minutes, then try again.";
+  return m;};
+const backTo=()=>location.origin+location.pathname;
 document.addEventListener("submit",async e=>{
-  if(e.target.id!=="loginform")return;
-  e.preventDefault();const A=state.auth;A.err="";A.busy=true;
-  A.email=document.getElementById("email").value.trim();const password=document.getElementById("pw").value;
+  const id=e.target.id;if(!["loginform","forgotform","pwform"].includes(id))return;
+  e.preventDefault();const A=state.auth;A.err="";A.msg="";A.busy=true;
+  const em=document.getElementById("email"),pw=document.getElementById("pw");
+  if(em)A.email=em.value.trim();const password=pw?pw.value:"";
   document.activeElement&&document.activeElement.blur();cache();render();
-  const {error}=await sb.auth.signInWithPassword({email:A.email,password});
-  A.busy=false;if(error){A.err=error.message==="Invalid login credentials"?"Email or password is wrong. Check them in Supabase → Authentication → Users.":error.message;render();}else{state.view="today";render();}
+  let r;
+  if(id==="forgotform")r=await sb.auth.resetPasswordForEmail(A.email,{redirectTo:backTo()});
+  else if(id==="pwform")r=await sb.auth.updateUser({password});
+  else if(e.target.dataset.mode==="signup")r=await sb.auth.signUp({email:A.email,password,options:{emailRedirectTo:backTo()}});
+  else r=await sb.auth.signInWithPassword({email:A.email,password});
+  A.busy=false;
+  if(r.error){A.err=authMsg(r.error);render();return;}
+  if(id==="forgotform"){A.msg="If that email has an account, a reset link is on its way.";render();return;}
+  if(id==="pwform"){A.mode="signin";A.msg="Password saved.";render();return;}
+  if(e.target.dataset.mode==="signup"&&!r.data.session){A.msg="Check your email for a link to confirm your account. Then you are signed in.";render();return;}
+  state.view="today";render();
 });
 
 /* ---------------- derived ---------------- */
@@ -1058,6 +1107,9 @@ function topCards(){
       <p>${START===TODAY?`Day 1 is today: <b>${p.t}</b>.`:`Day 1 is ${fmt(START)}. Until then, stay active and sleep well.`} Tap a workout to see how and why. Check it off when you finish.</p>
       <div class="actions"><button class="btn" data-act="welcomeok">Got it</button><button class="btn ghost" data-view="set">Change settings</button></div></div>`;}
   const didWork=Object.values(state.log).some(e=>e.done&&e.done.length);
+  if(sb&&!user&&didWork&&!lsGet("fc.savedone"))
+    out+=`<div class="panel topcard"><span class="eyebrow">Nice work</span><h3>Save your progress?</h3><p>Create a free account to keep your plan and check-offs on your phone and laptop. Skip it and everything stays on this device.</p>
+      <div class="actions"><button class="btn" data-act="gosignup">Create account</button><button class="btn ghost" data-act="savedismiss">Not now</button></div></div>`;
   if(isIOS&&!isInstalled&&!lsGet("fc.hsdone")&&(didWork||ssGet("fc.welcome")))
     out+=`<div class="panel topcard"><span class="eyebrow">One more thing</span><h3>Put it on your Home Screen</h3><p>It opens like an app: full screen, one tap, works offline.</p>${hsSteps}
       <div class="actions"><button class="btn ghost" data-act="hsdismiss">Done</button></div></div>`;
@@ -1145,7 +1197,7 @@ document.getElementById("onboard").addEventListener("click",e=>{
   if(o==="build"){ob.step=5;renderOnboard();}
   if(o==="skipabout"){ob.a.exp="some";ob.a.inj=[];ob.step=5;renderOnboard();}
   if(o==="close"){closeOnboard();}
-  if(o==="signin"){saveProfile({...DEFAULT_PROFILE});closeOnboard();state.view="acct";render();}
+  if(o==="signin"){saveProfile({...DEFAULT_PROFILE},false);closeOnboard();state.view="acct";render();}
 });
 document.getElementById("onboard").addEventListener("change",e=>{if(e.target.id==="obdate"&&e.target.value){ob.a.end=e.target.value<addDays(TODAY,7)?addDays(TODAY,7):e.target.value;renderOnboard();}});
 
@@ -1174,6 +1226,12 @@ app.addEventListener("click",e=>{
   if(a==="today"){state.sel=TODAY;render();}
   if(a==="all"){state.log[s]={...entry(s),done:plan(s).x.map(x=>x.id)};save(s);render();}
   if(a==="syncnow"){sync();}
+  if(t.dataset.amode){state.auth.mode=t.dataset.amode;state.auth.err="";state.auth.msg="";render();return;}
+  if(a==="delask"){state.auth.confirmDel=true;render();}
+  if(a==="delcancel"){state.auth.confirmDel=false;render();}
+  if(a==="delconfirm"){state.auth.confirmDel=false;Promise.all([sb.from("workout_log").delete().eq("user_id",user.id),sb.from("profiles").delete().eq("user_id",user.id)]).then(rs=>{const err=rs.find(r=>r.error&&!/profiles/.test(r.error.message||""));state.auth.msg=err?authMsg(err.error):"Your synced data is deleted. This device still has its copy.";state.pending={};cache();render();});}
+  if(a==="gosignup"){state.auth.mode="signup";state.view="acct";cache();render();window.scrollTo(0,0);}
+  if(a==="savedismiss"){try{localStorage.setItem("fc.savedone","1")}catch(e){}render();}
   if(a==="signout"){sb.auth.signOut().then(()=>{user=null;lastSync=null;setSync();render();});}
   if(a==="clear"){state.log[s]={done:[],rpe:null,note:""};save(s);render();}
   if(t.dataset.pmulti){const v=t.dataset.val,cur=state.draft.inj||[];state.draft.inj=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v];render();return;}
