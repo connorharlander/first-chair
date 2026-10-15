@@ -490,6 +490,7 @@ const E = {
  hollow:{n:"Hollow hold",c:"bal",how:"Lie on your back. Press the lower back into the floor, lift the shoulders and legs a little. Hold. Bend the knees to make it easier.",why:"It trains the trunk to resist extension, which protects the lower back when you get pushed back on the skis.",s:["raschner2012"]},
  riderun:{n:"Ride-run circuit",c:"pow",how:"One round, no rest inside: 30 s wall sit at riding depth → 20 s lateral bounds → 20 s low stance hold (feet at board width, knees bent, chest turned toward the front foot, small heel-to-toe rocks) → 20 s wall sit. Rest as given between rounds.",why:"A run keeps the legs loaded with little rest. In competitive riders, leg strength, leg power and aerobic fitness predicted results. This circuit trains long leg holds with quick changes in between.",s:["vernillo2018","platzer2009"]},
  extrot:{n:"Side-lying external rotation",c:"str",how:"Lie on your side, elbow bent 90° and pinned to your side. Hold a light dumbbell (or a full water bottle). Rotate the forearm up toward the ceiling, then lower slowly.",why:"Snowboarders injure the shoulder, collarbone and wrist more often than skiers. Strength training lowers sports injury rates in general, so the plan adds direct shoulder work. No study has tested a specific exercise for snowboard injuries.",s:["kim2012","chauffard2026","lauersen2014"]},
+ boxsquat:{n:"Box squat",c:"str",how:"Stand in front of a box or bench at a height where your knee feels fine. Sit back until you touch it lightly, then stand up. Hold dumbbells or a bar if you have them. Lower the box as it gets easier.",why:"A box sets the depth, so you keep training the legs while you control how far the knee bends. Strength training of any kind reduces sports injuries.",s:["lauersen2014"]},
  foamroll:{n:"Foam rolling",c:"mob",how:"Quads, IT band area, glutes, calves and upper back. 30–60 s per area. Moderate pressure.",why:"A meta-analysis found small benefits: slightly less soreness after training and a short-term gain in flexibility. Use it to feel better, not as a main recovery tool. Sleep matters far more.",s:["wiewelhove2019","fullagar2015"]}
 };
 
@@ -553,7 +554,7 @@ const short=s=>{const d=parse(s);return MON[d.getMonth()]+" "+d.getDate()};
 /* ---------------- profile: the answers that shape the plan ---------------- */
 // Defaults reproduce the original plan exactly. mins 0 means no time limit.
 const PROFILE_KEY="firstchair.profile";
-const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,mins:0};
+const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,mins:0,exp:"some",inj:[]};
 const PROFILE={...DEFAULT_PROFILE};
 try{const saved=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");for(const k in DEFAULT_PROFILE)if(saved[k]!==undefined)PROFILE[k]=saved[k];}catch(e){}
 if(PROFILE.mins&&PROFILE.mins<45)PROFILE.mins=45;          // the main lifts alone need about 25 min
@@ -604,6 +605,21 @@ if(BOARD){
   PH.peak.why="Training adapts to its demands. Work that matches the time, intensity and leg load of a run transfers best to the first days on snow.";PH.peak.s=["vernillo2018","platzer2009"];
   PH.base.why="More weekly sets build more muscle, and muscle is the base for later strength and power. Leg strength predicted results in competitive riders. Most cardio is easy, with one interval day.";PH.base.s=["schoenfeld2017","platzer2009","seiler2010"];
 }
+// New to lifting: one fewer set on the heaviest weeks, effort capped at RPE 7, fewer Nordic curls, no depth jumps
+if(PROFILE.exp==="new"){
+  PH_ORDER.forEach(k=>{const q=PH[k];
+    ["main","acc","upper"].forEach(f=>{q[f]=q[f].replace(/^4 ×/,"3 ×").replace(/RPE 8/g,"RPE 7")});
+    q.nord=q.nord.replace(/^(\d+) × (\d+)/,(m,a,b)=>`${Math.min(+a,2)} × ${Math.min(+b,4)}`);
+    q.plyo=q.plyo.filter(([id])=>id!=="depthjump");});
+  PH.build.goal+=" New to lifting: main lifts stay at RPE 7 and depth jumps wait until you have a strength base.";
+}
+// Past injuries: swap or remove exercises that load that area (not treatment)
+const INJURY={
+ knee:{label:"Knee",swap:{backsquat:"boxsquat",frontsquat:"boxsquat",goblet:"boxsquat",bwsquat:"boxsquat"},drop:["depthjump"],note:"box squats to a set depth, no depth jumps"},
+ back:{label:"Lower back",swap:{backsquat:"goblet",rdl:"bridge",dbrdl:"bridge",abwheel:"birddog",hollow:"birddog"},drop:[],note:"lighter squats in front, glute bridges instead of deadlifts, no ab-wheel"},
+ shoulder:{label:"Shoulder",swap:{pullup:"invrow",abwheel:"hollow"},drop:["landmine","dbpress","pikepush"],note:"rows instead of pull-ups, no overhead pressing, no ab-wheel"},
+ wrist:{label:"Wrist",swap:{abwheel:"hollow",birddog:"deadbug"},drop:["pushup","pikepush"],note:"no push-ups or ab-wheel"}};
+const INJ=(PROFILE.inj||[]).filter(k=>INJURY[k]);
 const START=(()=>{const t=addDays(END,-7),earliest=addDays(addDays(t,-((parse(t).getDay()+6)%7)),-77);return PROFILE.start<earliest?earliest:PROFILE.start})();
 const GEAR={gym:"full gym",db:"dumbbells",none:"no gear"};
 
@@ -721,6 +737,8 @@ function plan(s){
   }
   const sw=SWAPS[PROFILE.gear];
   if(sw)d.x=d.x.map(x=>sw[x.id]&&!d.x.some(y=>y.id===sw[x.id])?{...x,id:sw[x.id]}:x);
+  INJ.forEach(k=>{const r=INJURY[k];
+    d.x=d.x.filter(x=>!r.drop.includes(x.id)).flatMap(x=>{const to=r.swap[x.id];if(!to)return [x];return d.x.some(y=>y.id===to)?[]:[{...x,id:to}]});});
   if(PROFILE.mins&&!d.goal)fitTime(d,PROFILE.mins);
   d.phase=k;d.week=weekOf(s);d.total=d.x.reduce((a,b)=>a+b.m,0);
   return planCache[s]=d;
@@ -993,6 +1011,7 @@ function renderSci(){
   <div class="panel intro"><span class="eyebrow">How the plan works</span><h2 style="font-size:30px;margin-top:6px">${TOTAL_WEEKS} weeks, ${PHASES.length} phases</h2>
    <p>The plan runs from ${short(START)} to ${short(END)}. ${PHASES.length>=5?`It builds a base, rests for one week, gets heavy and explosive, turns ${BOARD?"ride":"ski"}-specific, and then tapers.`:"Your date is close, so the plan is short: an on-ramp to learn the movements, then a taper so you arrive fresh."} Each day has one main goal, and every session ends with a mobility and stretching cool-down.</p>
    <p><b>Your week (${PROFILE.days} training days):</b> ${wk}.</p>
+   ${PROFILE.exp==="new"||INJ.length?`<p><b>Adjusted for you:</b> ${[PROFILE.exp==="new"?"new to lifting (fewer sets on the heaviest weeks, effort up to RPE 7, no depth jumps)":"",...INJ.map(k=>`${INJURY[k].label.toLowerCase()} (${INJURY[k].note})`)].filter(Boolean).join("; ")}. These changes are not treatment. If something hurts now, see a physio before you start.</p>`:""}
    <p>${PROFILE.mins?`Sessions stay under about ${PROFILE.mins} minutes. When a session runs long, the plan shortens easy cardio first, then drops lower-priority extras.`:"Most days take 60–90 minutes. More time adds fatigue faster than fitness and raises injury risk. Use spare time for sleep, walking and food."}</p></div>
   <section><div class="sechd"><h2>Phases</h2></div>
    <div class="panel tblwrap" style="margin-top:8px"><table class="phasetbl"><thead><tr><th>Phase</th><th>Dates</th><th>Main lifts</th><th>Goal</th></tr></thead><tbody>
@@ -1045,8 +1064,14 @@ function topCards(){
   return out;
 }
 
+const EXP_OPTS=[["new","New to lifting"],["some","I lift regularly"]];
+function aboutYou(a,attr,multi){
+  return `<div class="grp"><span class="fld">Lifting experience</span><div class="seg" style="--n:2">${optBtns("exp",EXP_OPTS,a.exp,attr)}</div></div>
+    <div class="grp"><span class="fld">Past injuries (tap any)</span><div class="seg" style="--n:2">${Object.keys(INJURY).map(k=>`<button class="opt" data-${multi}="inj" data-val="${k}" aria-pressed="${(a.inj||[]).includes(k)}">${INJURY[k].label}</button>`).join("")}</div>
+    <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">This swaps or removes exercises that load that area. It is not treatment. If something hurts now, see a physio before you start.</p></div>`;
+}
 function renderSettings(){
-  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","mins"].some(k=>d[k]!==PROFILE[k]);
+  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","mins","exp","inj"].some(k=>JSON.stringify(d[k])!==JSON.stringify(PROFILE[k]));
   return `<div class="setv">
   <div class="panel"><span class="eyebrow">Settings</span><h2>Your plan</h2><p class="sub">Change an answer, then rebuild. Your logged workouts stay.</p>
     <div class="grp"><label class="fld" for="pend">First day on snow</label><input type="date" id="pend" value="${d.end}" min="${addDays(TODAY,7)}">
@@ -1055,7 +1080,8 @@ function renderSettings(){
     <div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,d.gear)}</div></div>
     <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,d.days)}</div></div>
     <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,d.mins)}</div></div>
-    ${d.gear!==PROFILE.gear?`<div class="note warn">Changing gear swaps some exercises on past days too, so a few old checkmarks may stop showing.</div>`:""}
+    ${aboutYou(d,"pset","pmulti")}
+    ${d.gear!==PROFILE.gear||JSON.stringify(d.inj)!==JSON.stringify(PROFILE.inj)?`<div class="note warn">Changing gear swaps some exercises on past days too, so a few old checkmarks may stop showing.</div>`:""}
     <div class="actions" style="margin-top:16px"><button class="btn" data-act="psave" ${changed?"":"disabled"}>Rebuild my plan</button></div></div>
   <div class="panel"><span class="eyebrow">Start date</span><h2>Started ${short(START)}</h2><p class="sub">Start over to begin again from day 1 today. Logged workouts stay on their dates.</p>
     <button class="btn ghost" data-act="restart" ${START===TODAY?"disabled":""}>Start over from today</button></div>
@@ -1067,13 +1093,13 @@ function renderSettings(){
 
 const ob={step:0,preview:false,a:{}};
 function openOnboard(preview){
-  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,mins:60};
+  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,mins:60,exp:"some",inj:[]};
   const el=document.getElementById("onboard");el.hidden=false;document.body.style.overflow="hidden";renderOnboard();
 }
 function closeOnboard(){document.getElementById("onboard").hidden=true;document.body.style.overflow="";}
 function renderOnboard(){
   const el=document.getElementById("onboard"),a=ob.a,n=ob.step;
-  const top=n>=1&&n<=3?`<div class="ob-top"><button class="ob-back" data-ob="back" aria-label="Back">‹</button><div class="ob-steps">${[1,2,3].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div><span class="ob-n">${n} of 3</span></div>`:"";
+  const top=n>=1&&n<=4?`<div class="ob-top"><button class="ob-back" data-ob="back" aria-label="Back">‹</button><div class="ob-steps">${[1,2,3,4].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div><span class="ob-n">${n} of 4</span></div>`:"";
   let body="";
   if(n===0)body=`<div class="ob-q ob-hero" style="margin-top:18px"><span class="eyebrow">Grand Targhee · Alta, Wyoming</span><h1>First Chair <span>Prep</span></h1><p>Get your legs ready for first chair. A plan built around your first day on snow.</p></div>
     <div class="ob-grow"></div><div class="panel" style="display:grid;gap:10px"><button class="cta" data-ob="next">Build my plan</button><p style="margin:0;text-align:center;font-size:12.5px;color:var(--muted)">About a minute. No account needed.</p></div>
@@ -1093,26 +1119,31 @@ function renderOnboard(){
     <div class="panel"><div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,a.gear,"oset")}</div></div>
       <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,a.days,"oset")}</div></div>
       <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,a.mins,"oset")}</div></div></div>
-    <div class="ob-grow"></div><button class="cta" data-ob="build">Build my plan</button>`;
-  if(n===4){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.sport==="board"?"Adding the ride sim and shoulder work":"Adding the ski sim and knee work",a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
-  if(n===5)body=`<div class="ob-q" style="margin-top:18px"><span class="eyebrow">Preview</span><h2>That's the flow</h2><p>New users land on their plan here. This was a preview, so your plan did not change.</p></div><div class="ob-grow"></div><button class="cta" data-ob="close">Back to my plan</button>`;
-  el.innerHTML=`<div class="ob${n===4?" ob-build":""}">${top}${body}</div>`;
+    <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;
+  if(n===4)body=`<div class="ob-q"><h2>Anything we should know?</h2><p>Optional. It sets your starting point.</p></div>
+    <div class="panel">${aboutYou(a,"oset","omulti")}</div>
+    <div class="ob-grow"></div><button class="cta" data-ob="build">Build my plan</button><button class="linkbtn" data-ob="skipabout">Skip for now</button>`;
+  if(n===5){const w=weeksLine(a.end);body=`<div class="ob-grow"></div><div class="ob-build" style="display:flex;flex-direction:column"><h2>Waxing your plan…</h2><ul id="oblist">${[`Counting down to ${short(a.end)}`,`Spacing the phases over ${w.n} weeks`,`Fitting ${a.days} training days a week`,a.sport==="board"?"Adding the ride sim and shoulder work":"Adding the ski sim and knee work",a.gear==="gym"?"Loading the barbell work":`Swapping in ${a.gear==="db"?"dumbbell":"bodyweight"} exercises`,...(a.exp==="new"?["Setting a gentler start"]:[]),...(a.inj.length?[`Working around your ${a.inj.map(k=>INJURY[k].label.toLowerCase()).join(" and ")}`]:[])].map(t=>`<li>${t}</li>`).join("")}</ul></div><div class="ob-grow"></div>`;}
+  if(n===6)body=`<div class="ob-q" style="margin-top:18px"><span class="eyebrow">Preview</span><h2>That's the flow</h2><p>New users land on their plan here. This was a preview, so your plan did not change.</p></div><div class="ob-grow"></div><button class="cta" data-ob="close">Back to my plan</button>`;
+  el.innerHTML=`<div class="ob${n===5?" ob-build":""}">${top}${body}</div>`;
   el.scrollTop=0;
-  if(n===4){const lis=[...el.querySelectorAll("#oblist li")];lis.forEach((li,i)=>setTimeout(()=>li.classList.add("done"),380*(i+1)));setTimeout(finishOnboard,380*lis.length+700);}
+  if(n===5){const lis=[...el.querySelectorAll("#oblist li")];lis.forEach((li,i)=>setTimeout(()=>li.classList.add("done"),380*(i+1)));setTimeout(finishOnboard,380*lis.length+700);}
 }
 function finishOnboard(){
-  if(ob.preview){ob.step=5;renderOnboard();return;}
-  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins});
+  if(ob.preview){ob.step=6;renderOnboard();return;}
+  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins,exp:a.exp,inj:a.inj});
   try{sessionStorage.setItem("fc.welcome","1")}catch(e){}
   state.view="today";cache();location.reload();
 }
 document.getElementById("onboard").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=k==="gear"||k==="sport"?b.dataset.val:+b.dataset.val;renderOnboard();return;}
+  if(b.dataset.oset){const k=b.dataset.oset;ob.a[k]=k==="gear"||k==="sport"||k==="exp"?b.dataset.val:+b.dataset.val;renderOnboard();return;}
+  if(b.dataset.omulti){const v=b.dataset.val;ob.a.inj=ob.a.inj.includes(v)?ob.a.inj.filter(x=>x!==v):[...ob.a.inj,v];renderOnboard();return;}
   const o=b.dataset.ob;
   if(o==="next"){ob.step++;renderOnboard();}
   if(o==="back"){ob.step=Math.max(0,ob.step-1);renderOnboard();}
-  if(o==="build"){ob.step=4;renderOnboard();}
+  if(o==="build"){ob.step=5;renderOnboard();}
+  if(o==="skipabout"){ob.a.exp="some";ob.a.inj=[];ob.step=5;renderOnboard();}
   if(o==="close"){closeOnboard();}
   if(o==="signin"){saveProfile({...DEFAULT_PROFILE});closeOnboard();state.view="acct";render();}
 });
@@ -1145,6 +1176,7 @@ app.addEventListener("click",e=>{
   if(a==="syncnow"){sync();}
   if(a==="signout"){sb.auth.signOut().then(()=>{user=null;lastSync=null;setSync();render();});}
   if(a==="clear"){state.log[s]={done:[],rpe:null,note:""};save(s);render();}
+  if(t.dataset.pmulti){const v=t.dataset.val,cur=state.draft.inj||[];state.draft.inj=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v];render();return;}
   if(t.dataset.pset){const k=t.dataset.pset,v=t.dataset.val;state.draft[k]=k==="days"||k==="mins"?+v:v;render();return;}
   if(a==="psave"){saveProfile({...PROFILE,...state.draft});state.view="today";cache();location.reload();}
   if(a==="restart"){saveProfile({...PROFILE,...state.draft,start:TODAY});state.view="today";cache();location.reload();}
