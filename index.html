@@ -818,6 +818,12 @@ const CORE_VIDS={
 const CORE_PLAN={
  ski:{"Lower A":["getskifit","end"],"Lower B":["oatblast","end"],"Ski sim":["jack15","end"],"Intervals":["jack10","end"],"Upper + Z2":["sync","start"],"Long Z2":["jackadv","start"],"Recovery":["gentle","start"]},
  board:{"Lower A":["getskifit","end"],"Lower B":["taevis","end"],"Ride sim":["mdcore","end"],"Intervals":["md5","end"],"Upper + Z2":["mdeasy","start"],"Long Z2":["oatblast","start"],"Recovery":["gentle","start"]}};
+// Every workout ends with couch stretch and foam rolling (first-chair day excepted)
+function addCoolDown(d){
+  if(d.goal)return;
+  if(!d.x.some(x=>x.id==="couch")){const i=d.x.findIndex(x=>x.id==="foamroll");d.x.splice(i<0?d.x.length:i,0,cd("couch","2 × 45 s /side",4));}
+  if(!d.x.some(x=>x.id==="foamroll"))d.x.push(cd("foamroll","5 min",5));
+}
 function addCore(d,k){
   const light=k==="onramp"||k==="deload"||k==="taper"||d.goal||d.short==="Rest";
   let [key,where]=(CORE_PLAN[BOARD?"board":"ski"][d.short])||["wake","start"];
@@ -857,6 +863,7 @@ function plan(s){
     d.x=d.x.filter(x=>!r.drop.includes(x.id)).flatMap(x=>{const to=r.swap[x.id];if(!to)return [x];return d.x.some(y=>y.id===to)?[]:[{...x,id:to}]});});
   if(PROFILE.mins&&!d.goal)fitTime(d,PROFILE.mins);
   addCore(d,k);   // on top of the time limit
+  addCoolDown(d); // also on top of the time limit
   d.phase=k;d.week=weekOf(s);d.total=d.x.reduce((a,b)=>a+b.m,0);
   return planCache[s]=d;
 }
@@ -1229,6 +1236,9 @@ function renderSci(){
 /* ---------------- what's new ---------------- */
 // Newest first. Add an entry for every update people can see. id must be unique.
 const CHANGELOG=[
+ {id:"2026-10-17-cooldown",d:"2026-10-17",t:"Couch stretch and foam rolling every day",items:[
+  "Every workout's cool-down now ends with the couch stretch and foam rolling.",
+  "Both have timers. They are added on top of your session time limit."]},
  {id:"2026-10-16-finish",d:"2026-10-16",t:"Finish workout, with a summary",items:[
   "Tap Finish workout to see your time, weight lifted, sets and reps, exercises done, core video and effort.",
   "New bests show when a lift's estimated max beats your last session.",
