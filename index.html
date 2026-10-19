@@ -641,12 +641,11 @@ const fmt=s=>{const d=parse(s);return DOW[d.getDay()]+", "+MON[d.getMonth()]+" "
 const short=s=>{const d=parse(s);return MON[d.getMonth()]+" "+d.getDate()};
 
 /* ---------------- profile: the answers that shape the plan ---------------- */
-// Defaults reproduce the original plan exactly. mins 0 means no time limit.
+// Defaults reproduce the original plan exactly. There is no session time limit: every exercise stays.
 const PROFILE_KEY="firstchair.profile";
-const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,mins:0,exp:"some",inj:[],units:"lb",lifts:{}};
+const DEFAULT_PROFILE={start:"2026-10-08",end:"2026-12-15",sport:"ski",gear:"gym",days:6,exp:"some",inj:[],units:"lb",lifts:{}};
 const PROFILE={...DEFAULT_PROFILE};
 try{const saved=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");for(const k in DEFAULT_PROFILE)if(saved[k]!==undefined)PROFILE[k]=saved[k];}catch(e){}
-if(PROFILE.mins&&PROFILE.mins<45)PROFILE.mins=45;          // the main lifts alone need about 25 min
 function saveProfile(p,stamp=true){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(stamp?{...p,u:new Date().toISOString()}:p))}catch(e){}}
 const END=PROFILE.end;
 // Plans run about 12 weeks at most: on-ramp week, 10 training weeks, taper. A later date starts the plan later.
@@ -789,16 +788,6 @@ const SWAPS={
  db:{backsquat:"goblet",frontsquat:"goblet",rdl:"dbrdl",pullup:"invrow",landmine:"dbpress",pallof:"birddog",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"},
  none:{backsquat:"bwsquat",frontsquat:"bwsquat",rdl:"bridge",pullup:"invrow",press:"pushup",landmine:"pikepush",row:"ytw",pallof:"birddog",suitcase:"sideplank",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"}};
 // When a session is over the time limit: shorten easy cardio first, then drop items in this order.
-const TRIM=["foamroll","suitcase","landmine","dbpress","pikepush","calf","laterallunge","slrdl","copenhagen","abwheel","hollow","deadbug","medball","rotjump","sideplank","row","ytw","slbalance","landhop","nordic","latbound","slalomhop","extrot","bss","stepdown"];
-function fitTime(d,cap){
-  let over=d.x.reduce((a,b)=>a+b.m,0)-cap;
-  if(over<=0)return;
-  d.x=d.x.map(x=>{if(over>0&&(x.id==="z2"||x.id==="walk")&&x.m>15){const m=Math.max(15,x.m-over);over-=x.m-m;return {...x,m,dose:x.dose.replace(/^\d+/,m)};}return x;});
-  for(const id of TRIM){if(over<=0)break;const i=d.x.findIndex(x=>x.id===id&&!x.cd);if(i>=0){over-=d.x[i].m;d.x.splice(i,1);}}
-  if(over>0&&cap<=45)d.x=d.x.map(x=>{if(over>0&&x.id==="warmup"&&x.m>6){over-=x.m-6;return {...x,m:6,dose:"6 min"};}return x;});
-  const keepCd=cap<=45?1:2;
-  while(over>0&&d.x.filter(x=>x.cd).length>keepCd){const i=d.x.map(x=>!!x.cd).lastIndexOf(true);over-=d.x[i].m;d.x.splice(i,1);}
-}
 
 /* Core videos (YouTube, played in the app). Checked: length 5–15 min and embedding allowed.
    Heavy-lift and jump-landing days put the video last (curi2024, vermeulen2023); other days put it first. */
@@ -861,9 +850,8 @@ function plan(s){
   if(sw)d.x=d.x.map(x=>sw[x.id]&&!d.x.some(y=>y.id===sw[x.id])?{...x,id:sw[x.id]}:x);
   INJ.forEach(k=>{const r=INJURY[k];
     d.x=d.x.filter(x=>!r.drop.includes(x.id)).flatMap(x=>{const to=r.swap[x.id];if(!to)return [x];return d.x.some(y=>y.id===to)?[]:[{...x,id:to}]});});
-  if(PROFILE.mins&&!d.goal)fitTime(d,PROFILE.mins);
-  addCore(d,k);   // on top of the time limit
-  addCoolDown(d); // also on top of the time limit
+  addCore(d,k);
+  addCoolDown(d);
   d.phase=k;d.week=weekOf(s);d.total=d.x.reduce((a,b)=>a+b.m,0);
   return planCache[s]=d;
 }
@@ -1217,7 +1205,7 @@ function renderSci(){
    <p>The plan runs from ${short(START)} to ${short(END)}. ${PHASES.length>=5?`It builds a base, rests for one week, gets heavy and explosive, turns ${BOARD?"ride":"ski"}-specific, and then tapers.`:"Your date is close, so the plan is short: an on-ramp to learn the movements, then a taper so you arrive fresh."} Each day has one main goal, and every session ends with a mobility and stretching cool-down.</p>
    <p><b>Your week (${PROFILE.days} training days):</b> ${wk}.</p>
    ${PROFILE.exp==="new"||INJ.length?`<p><b>Adjusted for you:</b> ${[PROFILE.exp==="new"?"new to lifting (fewer sets on the heaviest weeks, effort up to RPE 7, no depth jumps)":"",...INJ.map(k=>`${INJURY[k].label.toLowerCase()} (${INJURY[k].note})`)].filter(Boolean).join("; ")}. These changes are not treatment. If something hurts now, see a physio before you start.</p>`:""}
-   <p>${PROFILE.mins?`Sessions stay under about ${PROFILE.mins} minutes. When a session runs long, the plan shortens easy cardio first, then drops lower-priority extras.`:"Most days take 60–90 minutes. More time adds fatigue faster than fitness and raises injury risk. Use spare time for sleep, walking and food."}</p></div>
+   <p>Most days take 60–90 minutes. More time adds fatigue faster than fitness and raises injury risk. Use spare time for sleep, walking and food.</p></div>
   <section><div class="sechd"><h2>Phases</h2></div>
    <div class="panel tblwrap" style="margin-top:8px"><table class="phasetbl"><thead><tr><th>Phase</th><th>Dates</th><th>Main lifts</th><th>Goal</th></tr></thead><tbody>
    ${PHASES.map(k=>`<tr><td><i class="swatch" style="background:var(--ph-${k})"></i>${PH[k].name}</td><td class="mono">${MON[parse(PH[k].from).getMonth()]} ${parse(PH[k].from).getDate()} – ${MON[parse(PH[k].to).getMonth()]} ${parse(PH[k].to).getDate()}</td><td class="mono">${PH[k].main}</td><td>${PH[k].goal}</td></tr>`).join("")}
@@ -1236,9 +1224,12 @@ function renderSci(){
 /* ---------------- what's new ---------------- */
 // Newest first. Add an entry for every update people can see. id must be unique.
 const CHANGELOG=[
+ {id:"2026-10-19-nolimit",d:"2026-10-19",t:"No more time limits",items:[
+  "Every session now has every exercise. The time-per-session setting is gone.",
+  "If you had a time limit, your Bulgarian split squats, Nordic curls and other exercises are back."]},
  {id:"2026-10-17-cooldown",d:"2026-10-17",t:"Couch stretch and foam rolling every day",items:[
   "Every workout's cool-down now ends with the couch stretch and foam rolling.",
-  "Both have timers. They are added on top of your session time limit."]},
+  "Both have timers."]},
  {id:"2026-10-16-finish",d:"2026-10-16",t:"Finish workout, with a summary",items:[
   "Tap Finish workout to see your time, weight lifted, sets and reps, exercises done, core video and effort.",
   "New bests show when a lift's estimated max beats your last session.",
@@ -1301,7 +1292,6 @@ function startFor(start,end){const t=addDays(end,-7),earliest=addDays(mondayOf(t
 function weeksLine(end){const s=startFor(TODAY,end),n=Math.ceil((diff(s,end)+1)/7);return {n,start:s}}
 const optBtns=(key,opts,cur,attr="pset")=>opts.map(([v,l,sm])=>`<button class="opt" data-${attr}="${key}" data-val="${v}" aria-pressed="${String(cur)===String(v)}">${l}${sm?`<small>${sm}</small>`:""}</button>`).join("");
 const DAYS_OPTS=[[3,"3"],[4,"4"],[5,"5"],[6,"6"]];
-const MIN_OPTS=[[45,"45","min"],[60,"60","min"],[90,"90","min"],[0,"No","limit"]];
 const GEAR_OPTS=[["gym","Full gym"],["db","Dumbbells"],["none","No gear"]];
 const SKI_SVG=`<svg viewBox="0 0 72 72" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M24 8v52c0 3-2 5-5 5"/><path d="M44 8v52c0 3-2 5-5 5"/></g><g fill="var(--accent)"><rect x="19" y="34" width="10" height="9" rx="2"/><rect x="39" y="34" width="10" height="9" rx="2"/></g></svg>`;
 const BOARD_SVG=`<svg viewBox="0 0 72 72" aria-hidden="true"><g transform="rotate(-20 36 36)"><rect x="10" y="26" width="52" height="20" rx="10" fill="none" stroke="currentColor" stroke-width="4"/><rect x="22" y="31" width="7" height="10" rx="2" fill="var(--accent)"/><rect x="43" y="31" width="7" height="10" rx="2" fill="var(--accent)"/></g></svg>`;
@@ -1316,7 +1306,7 @@ function topCards(){
   let out="";
   if(ssGet("fc.welcome")){const p=plan(START);
     out+=`<div class="panel topcard"><span class="eyebrow">Your plan is ready</span><h3>${TOTAL_WEEKS} weeks to first chair</h3>
-      <p>${short(START)} → ${short(END)} · ${PROFILE.days} days a week · ${GEAR[PROFILE.gear]}${PROFILE.mins?` · up to ${PROFILE.mins} min`:""}.</p>
+      <p>${short(START)} → ${short(END)} · ${PROFILE.days} days a week · ${GEAR[PROFILE.gear]}.</p>
       <p>${START===TODAY?`Day 1 is today: <b>${p.t}</b>.`:`Day 1 is ${fmt(START)}. Until then, stay active and sleep well.`} Tap a workout to see how and why. Check it off when you finish.</p>
       <div class="actions"><button class="btn" data-act="welcomeok">Got it</button><button class="btn ghost" data-view="set">Change settings</button></div></div>`;}
   const didWork=Object.values(state.log).some(e=>e.done&&e.done.length);
@@ -1347,7 +1337,7 @@ function aboutYou(a,attr,multi){
     <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">This swaps or removes exercises that load that area. It is not treatment. If something hurts now, see a physio before you start.</p></div>`;
 }
 function renderSettings(){
-  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","mins","exp","inj","units","lifts"].some(k=>JSON.stringify(d[k])!==JSON.stringify(PROFILE[k]));
+  const d=state.draft,w=weeksLine(d.end),changed=["end","sport","gear","days","exp","inj","units","lifts"].some(k=>JSON.stringify(d[k])!==JSON.stringify(PROFILE[k]));
   return `<div class="setv">
   <div class="panel"><span class="eyebrow">Settings</span><h2>Your plan</h2><p class="sub">Change an answer, then rebuild. Your logged workouts stay.</p>
     <div class="grp"><label class="fld" for="pend">First day on snow</label><input type="date" id="pend" value="${d.end}" min="${addDays(TODAY,7)}">
@@ -1355,7 +1345,6 @@ function renderSettings(){
     <div class="grp"><span class="fld">Sport</span><div class="seg" style="--n:2">${optBtns("sport",[["ski","Ski"],["board","Snowboard"]],d.sport)}</div></div>
     <div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,d.gear)}</div></div>
     <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,d.days)}</div></div>
-    <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,d.mins)}</div></div>
     <div class="grp"><span class="fld">Weights in</span><div class="seg" style="--n:2">${optBtns("units",[["lb","Pounds (lb)"],["kg","Kilograms (kg)"]],d.units||"lb")}</div></div>
     <div class="grp"><span class="fld">Your numbers (optional)</span>${liftInputs(d.lifts,d.gear,d.units||"lb","pl")}</div>
     ${aboutYou(d,"pset","pmulti")}
@@ -1373,7 +1362,7 @@ function renderSettings(){
 
 const ob={step:0,preview:false,a:{}};
 function openOnboard(preview){
-  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,mins:60,exp:"some",inj:[],units:"lb",lifts:{}};
+  ob.step=0;ob.preview=preview;ob.a={end:addDays(TODAY,63),sport:"ski",gear:"gym",days:4,exp:"some",inj:[],units:"lb",lifts:{}};
   const el=document.getElementById("onboard");el.hidden=false;document.body.style.overflow="hidden";renderOnboard();
 }
 function closeOnboard(){document.getElementById("onboard").hidden=true;document.body.style.overflow="";}
@@ -1398,8 +1387,7 @@ function renderOnboard(){
     <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;
   if(n===3)body=`<div class="ob-q"><h2>What's your setup?</h2><p>We fit the plan to your gear and your week.</p></div>
     <div class="panel"><div class="grp"><span class="fld">Where you train</span><div class="seg">${optBtns("gear",GEAR_OPTS,a.gear,"oset")}</div></div>
-      <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,a.days,"oset")}</div></div>
-      <div class="grp"><span class="fld">Time per session</span><div class="seg" style="--n:4">${optBtns("mins",MIN_OPTS,a.mins,"oset")}</div></div></div>
+      <div class="grp"><span class="fld">Days per week</span><div class="seg" style="--n:4">${optBtns("days",DAYS_OPTS,a.days,"oset")}</div></div></div>
     <div class="ob-grow"></div><button class="cta" data-ob="next">Next</button>`;
   if(n===4)body=`<div class="ob-q"><h2>Know your numbers?</h2><p>Optional. It sets your starting weights.</p></div>
     <div class="panel"><div class="grp"><span class="fld">Weights in</span><div class="seg" style="--n:2">${optBtns("units",[["lb","Pounds (lb)"],["kg","Kilograms (kg)"]],a.units,"oset")}</div></div>
@@ -1416,7 +1404,7 @@ function renderOnboard(){
 }
 function finishOnboard(){
   if(ob.preview){ob.step=7;renderOnboard();return;}
-  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,mins:a.mins,exp:a.exp,inj:a.inj,units:a.units,lifts:a.gear==="none"?{}:cleanLifts(a.lifts,a.units)});
+  const a=ob.a;saveProfile({start:TODAY,end:a.end,sport:a.sport,gear:a.gear,days:a.days,exp:a.exp,inj:a.inj,units:a.units,lifts:a.gear==="none"?{}:cleanLifts(a.lifts,a.units)});
   try{sessionStorage.setItem("fc.welcome","1")}catch(e){}
   markNewsSeen();state.view="today";cache();location.reload();
 }
@@ -1683,7 +1671,7 @@ app.addEventListener("click",e=>{
   if(a==="signout"){sb.auth.signOut().then(()=>{user=null;lastSync=null;setSync();render();});}
   if(a==="clear"){state.log[s]={done:[],rpe:null,note:"",sets:{}};save(s);render();}
   if(t.dataset.pmulti){const v=t.dataset.val,cur=state.draft.inj||[];state.draft.inj=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v];render();return;}
-  if(t.dataset.pset){const k=t.dataset.pset,v=t.dataset.val;state.draft[k]=k==="days"||k==="mins"?+v:v;render();return;}
+  if(t.dataset.pset){const k=t.dataset.pset,v=t.dataset.val;state.draft[k]=k==="days"?+v:v;render();return;}
   if(a==="psave"){state.draft.lifts=cleanLifts(state.draft.lifts,state.draft.units);saveProfile({...PROFILE,...state.draft});state.view="today";cache();location.reload();}
   if(a==="restart"){saveProfile({...PROFILE,...state.draft,start:TODAY});state.view="today";cache();location.reload();}
   if(a==="replay"){openOnboard(true);}
