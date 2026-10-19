@@ -513,6 +513,7 @@ const S = {
   zourdos2016:["Zourdos et al. 2016","Novel resistance training-specific rating of perceived exertion scale measuring repetitions in reserve. J Strength Cond Res 30(1):267–275."],
   curi2024:["Curi et al. 2024","The effects of core muscle fatigue on lower limbs and trunk during single-leg drop landing: a comparison between recreational runners with and without dynamic knee valgus. Knee 50:96–106."],
   vermeulen2023:["Vermeulen et al. 2023","The effect of fatigue on trunk and pelvic jump-landing biomechanics in view of lower extremity loading: a systematic review. J Hum Kinet 86:73–95."],
+  ghayomzadeh2025:["Ghayomzadeh et al. 2025","Effects of isometric vs. dynamic resistance training on isometric and isokinetic muscular strength: a systematic review with meta-analysis. J Sci Med Sport 28(12):1046–1055."],
   fullagar2015:["Fullagar et al. 2015","Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise. Sports Med 45(2):161–186."]
 };
 const scholar = id => "https://scholar.google.com/scholar?q=" + encodeURIComponent(S[id][1].split(".")[0]);
@@ -580,46 +581,48 @@ const E = {
  extrot:{n:"Side-lying external rotation",c:"str",how:"Lie on your side, elbow bent 90° and pinned to your side. Hold a light dumbbell (or a full water bottle). Rotate the forearm up toward the ceiling, then lower slowly.",why:"Snowboarders injure the shoulder, collarbone and wrist more often than skiers. Strength training lowers sports injury rates in general, so the plan adds direct shoulder work. No study has tested a specific exercise for snowboard injuries.",s:["kim2012","chauffard2026","lauersen2014"]},
  boxsquat:{n:"Box squat",c:"str",how:"Stand in front of a box or bench at a height where your knee feels fine. Sit back until you touch it lightly, then stand up. Hold dumbbells or a bar if you have them. Lower the box as it gets easier.",why:"A box sets the depth, so you keep training the legs while you control how far the knee bends. Strength training of any kind reduces sports injuries.",s:["lauersen2014"]},
  core:{n:"Core video",c:"bal",how:"Tap Watch here to play it in the app. Follow along, then tap Done.",why:"Core strength links the hips and trunk in turns. In a 10-year study of young ski racers, weaker core strength was linked to ACL injury. On days with heavy lifts or jump landings the video comes last, because a tired core may let the knee cave in on single-leg landings. A review found smaller effects, so this is the cautious choice.",s:["raschner2012","curi2024","vermeulen2023"]},
+ spanish:{n:"Spanish squat hold",c:"str",how:"Loop a heavy band or strap around a sturdy post at knee height and behind both knees. Step back until it is tight. Sit back and down with shins near vertical and torso upright, to about a half squat. Hold, pushing the knees back into the band. No band? Do a wall sit at the same depth.",why:"Skiing holds the quads in long, near-isometric contractions for whole runs. A review of 32 studies found isometric training builds strength as well as dynamic training on most tests, and more for held strength. This hold adds that kind of quad work next to your squats.",s:["turnbull2009","ghayomzadeh2025"]},
+ wallsit:{n:"Wall sit",c:"str",how:"Back flat on a wall, feet forward, knees bent to about a half squat. Hold. Go lower to make it harder.",why:"Skiing holds the quads in long, near-isometric contractions. A review of 32 studies found isometric training builds strength as well as dynamic training on most tests, and more for held strength.",s:["turnbull2009","ghayomzadeh2025"]},
  foamroll:{n:"Foam rolling",c:"mob",how:"Quads, IT band area, glutes, calves and upper back. 30–60 s per area. Moderate pressure.",why:"A meta-analysis found small benefits: slightly less soreness after training and a short-term gain in flexibility. Use it to feel better, not as a main recovery tool. Sleep matters far more.",s:["wiewelhove2019","fullagar2015"]}
 };
 
 /* Demo videos: one chosen YouTube video per exercise */
-const VID={"warmup":"c9c0dZkkoTE","backsquat":"8PMjqgR8Wa8","frontsquat":"npVgCT7NznU","rdl":"KTME4qWcvTM","bss":"EiBXgDJ_g-Q","stepdown":"TYt9_FmGbqM","slrdl":"k83AIfjDbnI","laterallunge":"IsjTYbYBXyc","nordic":"_e9vFU9-tkc","copenhagen":"gsWpUFyVRyM","calf":"IphGZ8OlfYg","pullup":"nfCHD8i8UI4","press":"pKZMNVbfUzQ","row":"Qx2f4YwJAu4","landmine":"CA6tkn3Qilc","pallof":"LA6Uc5yIV1c","deadbug":"g_BYB0R-4Ws","sideplank":"0M-erHBl48U","suitcase":"y-hn_Ha1-RE","abwheel":"NbudTqiwguk","slbalance":"EkR2rRfWqHM","landhop":"dhA3HGDOUIQ","pogo":"7SIfCcfP4g0","snapdown":"4BkMWe3au9w","latbound":"niEGdFUQ6sY","boxjump":"YLPQsdRDmB0","depthjump":"bMHL5xqKn3E","slalomhop":"LVtHg5ouLyc","medball":"o9BC7lgN1bo","skirun":"qvlf1pq9gXU","intervals":"VEyTqLqrqX8","z2":"SV-KfCQPJJ4","couch":"-rsIS-wl-ig","hip9090":"HUZimFZJZWU","ankle":"CRgmHELYh3A","tspine":"rDviWORCWEw","pigeon":"2vwIdJbOqx4","hamstrap":"Il1L75v6gq0","adductor":"yF8o6I6aSZg","calfstretch":"E2UZKuZttW4","latstretch":"bWQmSjG5Y30","pecstretch":"bZ-eaBPOGiM","foamroll":"9a3awO81tUM"};
+const VID={"spanish":"hgFxm5KIF7M","warmup":"c9c0dZkkoTE","backsquat":"8PMjqgR8Wa8","frontsquat":"npVgCT7NznU","rdl":"KTME4qWcvTM","bss":"EiBXgDJ_g-Q","stepdown":"TYt9_FmGbqM","slrdl":"k83AIfjDbnI","laterallunge":"IsjTYbYBXyc","nordic":"_e9vFU9-tkc","copenhagen":"gsWpUFyVRyM","calf":"IphGZ8OlfYg","pullup":"nfCHD8i8UI4","press":"pKZMNVbfUzQ","row":"Qx2f4YwJAu4","landmine":"CA6tkn3Qilc","pallof":"LA6Uc5yIV1c","deadbug":"g_BYB0R-4Ws","sideplank":"0M-erHBl48U","suitcase":"y-hn_Ha1-RE","abwheel":"NbudTqiwguk","slbalance":"EkR2rRfWqHM","landhop":"dhA3HGDOUIQ","pogo":"7SIfCcfP4g0","snapdown":"4BkMWe3au9w","latbound":"niEGdFUQ6sY","boxjump":"YLPQsdRDmB0","depthjump":"bMHL5xqKn3E","slalomhop":"LVtHg5ouLyc","medball":"o9BC7lgN1bo","skirun":"qvlf1pq9gXU","intervals":"VEyTqLqrqX8","z2":"SV-KfCQPJJ4","couch":"-rsIS-wl-ig","hip9090":"HUZimFZJZWU","ankle":"CRgmHELYh3A","tspine":"rDviWORCWEw","pigeon":"2vwIdJbOqx4","hamstrap":"Il1L75v6gq0","adductor":"yF8o6I6aSZg","calfstretch":"E2UZKuZttW4","latstretch":"bWQmSjG5Y30","pecstretch":"bZ-eaBPOGiM","foamroll":"9a3awO81tUM"};
 const ytUrl=id=>VID[id]?"https://www.youtube.com/watch?v="+VID[id]:null;
 const ytLink=id=>{const u=ytUrl(id);return u?`<a class="yt" href="${u}" target="_blank" rel="noopener">▶ Watch demo</a>`:""};
 
 /* ---------------- phases ---------------- */
 const PH = {
- onramp:{name:"On-ramp",from:"2026-10-08",to:"2026-10-11",
+ onramp:{name:"On-ramp",from:"2026-10-08",to:"2026-10-11",span:"2 × 20 s",
    goal:"Learn the movements and find your starting weights. Leave every set with 3–4 reps in reserve.",
    why:"The first exposure to new and eccentric work causes the most soreness. A light first week gives you the repeated bout effect: muscles adapt fast, so later sessions cause far less damage.",s:["mchugh2003","helms2016"],
    main:"2 × 8 @ RPE 6",acc:"2 × 8 /side @ RPE 6",nord:"2 × 3",cph:"2 × 15 s /side",core:"2 × 8",plank:"2 × 20 s /side",upper:"2 × 8 @ RPE 6",
    plyo:[["pogo","2 × 10"],["snapdown","2 × 4"]],int:null,z2mid:30,z2long:45,ski:null,walk:30},
- base:{name:"Base",from:"2026-10-12",to:"2026-11-01",
+ base:{name:"Base",from:"2026-10-12",to:"2026-11-01",span:"3 × 30 s",
    goal:"Build work capacity, eccentric strength and aerobic base. Moderate loads, slow lowering, more total sets.",
    why:"More weekly sets build more muscle, and muscle is the base for later strength and power. Slow eccentrics match how skiing loads the quads. Most cardio is easy, with one interval day.",s:["schoenfeld2017","vogt2014","seiler2010"],
    main:"3 × 8 @ RPE 7 · 3 s lower",acc:"3 × 10 /side · 3 s lower",nord:"3 × 4",cph:"3 × 20 s /side",core:"3 × 10",plank:"3 × 30 s /side",upper:"3 × 8 @ RPE 7",
    plyo:[["pogo","3 × 15"],["snapdown","3 × 5"],["latbound","3 × 5 /side · stick 2 s"]],
    int:{t:"6 × 1 min hard (RPE 8) / 2 min easy",m:30},z2mid:45,z2long:75,ski:{t:"3 rounds × 90 s · 2 min rest",m:12},walk:45},
- deload:{name:"Deload",from:"2026-11-02",to:"2026-11-08",
+ deload:{name:"Deload",from:"2026-11-02",to:"2026-11-08",span:"2 × 30 s",
    goal:"Cut volume by about 40% and drop intensity. Same exercises. Sleep more.",
    why:"Fitness gains show up when fatigue drops. A planned easy week after three hard weeks lowers injury risk from accumulated load and sets up the heavy block.",s:["soligard2016","bosquet2007"],
    main:"2 × 6 @ RPE 6",acc:"2 × 8 /side @ RPE 6",nord:"2 × 3",cph:"2 × 20 s /side",core:"2 × 8",plank:"2 × 30 s /side",upper:"2 × 8 @ RPE 6",
    plyo:[["pogo","2 × 10"],["latbound","2 × 4 /side"]],
    int:{t:"4 × 1 min hard / 2 min easy",m:22},z2mid:30,z2long:50,ski:{t:"2 rounds × 90 s · 2 min rest",m:8},walk:40},
- build:{name:"Strength & power",from:"2026-11-09",to:"2026-11-29",
+ build:{name:"Strength & power",from:"2026-11-09",to:"2026-11-29",span:"3 × 45 s",
    goal:"Heavier loads, fewer reps, more explosive jumps. Longer intervals. This is the hardest block.",
    why:"Heavy strength work (about 4–6 reps) improves maximum force and endurance economy. Plyometrics convert that strength into fast force. Longer intervals push VO2max.",s:["ronnestad2014","markovic2007","milanovic2015"],
    main:"4 × 5 @ RPE 8",acc:"3 × 6 /side @ RPE 8",nord:"3 × 6",cph:"3 × 30 s /side",core:"3 × 10",plank:"3 × 40 s /side",upper:"4 × 6 @ RPE 8",
    plyo:[["boxjump","4 × 4"],["latbound","4 × 6 /side"],["depthjump","3 × 4"]],
    int:{t:"5 × 3 min hard (RPE 8–9) / 2 min easy",m:35},z2mid:45,z2long:90,ski:{t:"5 rounds × 90 s · 90 s rest",m:18},walk:45},
- peak:{name:"Ski-specific",from:"2026-11-30",to:"2026-12-06",
+ peak:{name:"Ski-specific",from:"2026-11-30",to:"2026-12-06",span:"3 × 45 s",
    goal:"Keep strength with low reps. Shift time to ski-like intervals, fast footwork and the ski-run circuit.",
    why:"Training adapts to its demands. Work that matches the time, intensity and movement of a ski run transfers best to the first days on snow.",s:["turnbull2009","hydren2013"],
    main:"3 × 3 @ RPE 8 · then 3 jumps",acc:"3 × 6 /side @ RPE 7",nord:"2 × 5",cph:"2 × 30 s /side",core:"3 × 8",plank:"3 × 40 s /side",upper:"3 × 6 @ RPE 7",
    plyo:[["latbound","3 × 20 s continuous"],["slalomhop","4 × 20 s"],["boxjump","3 × 3"]],
    int:{t:"10 × 1 min hard / 1 min easy",m:30},z2mid:40,z2long:75,ski:{t:"6 rounds × 90 s · 90 s rest",m:20},walk:45},
- taper:{name:"Taper",from:"2026-12-07",to:"2026-12-15",
+ taper:{name:"Taper",from:"2026-12-07",to:"2026-12-15",span:"2 × 30 s",
    goal:"Cut volume about 50%. Keep the intensity. Arrive fresh, not tired.",
    why:"A meta-analysis of tapering found the best results with an 8–14 day taper that cuts volume by 41–60% and keeps intensity and frequency. This taper is 9 days.",s:["bosquet2007"],
    main:"2 × 3 @ RPE 7",acc:"2 × 5 /side @ RPE 7",nord:"1 × 4",cph:"2 × 20 s /side",core:"2 × 8",plank:"2 × 30 s /side",upper:"2 × 6 @ RPE 6",
@@ -651,6 +654,8 @@ const END=PROFILE.end;
 // Plans run about 12 weeks at most: on-ramp week, 10 training weeks, taper. A later date starts the plan later.
 // Snowboard: same training, riding-specific reasons. Only claims the sources support.
 const BOARD_WHY={
+ spanish:["Riding holds the legs bent for whole runs. A review of 32 studies found isometric training builds strength as well as dynamic training on most tests, and more for held strength. This hold adds that kind of quad work next to your squats.",["vernillo2018","ghayomzadeh2025"]],
+ wallsit:["Riding holds the legs bent for whole runs. A review of 32 studies found isometric training builds strength as well as dynamic training on most tests, and more for held strength.",["vernillo2018","ghayomzadeh2025"]],
  core:["Core power predicted results in competitive snowboarders. On days with heavy lifts or jump landings the video comes last, because a tired core may let the knee cave in on single-leg landings. A review found smaller effects, so this is the cautious choice.",["platzer2009","curi2024","vermeulen2023"]],
  backsquat:["Riding keeps the legs bent and loaded for whole runs. In competitive riders, leg strength and leg power predicted results. Strength training also prevents injury: a meta-analysis of trials found it cut sports injuries to less than one third.",["vernillo2018","platzer2009","lauersen2014"]],
  frontsquat:["The upright torso and bent knees are close to a riding stance. It loads the quads more than the back squat and puts less load on the lower back.",["vernillo2018"]],
@@ -748,7 +753,7 @@ function it(id,dose,m){return {id,dose,m}}
 function cd(id,dose,m){return {id,dose,m,cd:true}}
 const TPL={
  lowerA:p=>({t:"Lower A · Strength",short:"Lower A",r:"black",f:"Heavy bilateral legs, hamstring and adductor protection, anti-rotation core. Ends with a hip and hamstring cool-down.",x:[
-   it("warmup","10 min",10),it("backsquat",p.main,14),it("rdl",p.main,12),it("bss",p.acc,10),it("nordic",p.nord,6),it("copenhagen",p.cph,5),it("pallof",p.core+" /side",5),
+   it("warmup","10 min",10),it("backsquat",p.main,14),it("rdl",p.main,12),it("bss",p.acc,10),it("spanish",p.span,6),it("nordic",p.nord,6),it("copenhagen",p.cph,5),it("pallof",p.core+" /side",5),
    cd("couch","2 × 45 s /side",4),cd("hamstrap","2 × 45 s /side",3),cd("adductor","2 × 8 /side",3),cd("hip9090","2 × 6 /side",3)]}),
  intervals:p=>({t:"Intervals + Balance",short:"Intervals",r:"black",f:"Hard aerobic intervals, then knee-control and core work. Ends with a lower-leg and hip cool-down.",x:[
    it("warmup","10 min",10),it("intervals",p.int.t,p.int.m),it("slbalance","3 × 30 s /side",6),it("landhop","3 × 5 /side",6),it("deadbug",p.core+" /side",5),it("sideplank",p.plank,5),
@@ -786,7 +791,7 @@ function templateFor(k,dow){
 // Swaps when there is no full gym. Each session keeps distinct exercises.
 const SWAPS={
  db:{backsquat:"goblet",frontsquat:"goblet",rdl:"dbrdl",pullup:"invrow",landmine:"dbpress",pallof:"birddog",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"},
- none:{backsquat:"bwsquat",frontsquat:"bwsquat",rdl:"bridge",pullup:"invrow",press:"pushup",landmine:"pikepush",row:"ytw",pallof:"birddog",suitcase:"sideplank",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"}};
+ none:{spanish:"wallsit",backsquat:"bwsquat",frontsquat:"bwsquat",rdl:"bridge",pullup:"invrow",press:"pushup",landmine:"pikepush",row:"ytw",pallof:"birddog",suitcase:"sideplank",boxjump:"squatjump",medball:"rotjump",abwheel:"hollow"}};
 // When a session is over the time limit: shorten easy cardio first, then drop items in this order.
 
 /* Core videos (YouTube, played in the app). Checked: length 5–15 min and embedding allowed.
@@ -1224,6 +1229,10 @@ function renderSci(){
 /* ---------------- what's new ---------------- */
 // Newest first. Add an entry for every update people can see. id must be unique.
 const CHANGELOG=[
+ {id:"2026-10-19-spanish",d:"2026-10-19",t:"Spanish squat holds on Lower A",items:[
+  "Lower A adds a Spanish squat hold after the Bulgarian split squat: 3 × 30 s in base weeks, 3 × 45 s in the strength and ski-specific weeks.",
+  "It trains the long, held quad work of a ski turn. Tap ▶ on a set to time the hold.",
+  "No gear? You get a wall sit instead."]},
  {id:"2026-10-19-nolimit",d:"2026-10-19",t:"No more time limits",items:[
   "Every session now has every exercise. The time-per-session setting is gone.",
   "If you had a time limit, your Bulgarian split squats, Nordic curls and other exercises are back."]},
