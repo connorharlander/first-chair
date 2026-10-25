@@ -154,7 +154,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:.01em;text-
 .rate.dbl::before{left:-1px}.rate.dbl::after{left:9px}
 
 /* today */
-.dayhd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dayhd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:var(--dockh,0px);z-index:4;padding-block:8px;margin-block:-8px}
 .nav{border:1px solid var(--glass-line);background:var(--glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);width:38px;height:38px;border-radius:10px;font-size:20px;line-height:1;box-shadow:var(--shadow)}
 .nav:disabled{opacity:.4;cursor:default}
 .dayhd .date{font:700 24px/1 var(--f-display);text-transform:uppercase;letter-spacing:.05em;min-width:10ch;text-align:center;padding:7px 12px;border-radius:10px;background:var(--glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--shadow)}
@@ -237,6 +237,9 @@ aside .stack{display:flex;flex-direction:column;gap:16px}
 .sfix{font:500 14px/1 var(--f-mono)}
 .srow select{flex:none;font:500 13px/1 var(--f-mono);padding:7px 2px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--fg)}
 .sgo{flex:none;border:1px solid var(--accent);color:var(--accent);background:none;border-radius:7px;width:34px;height:32px;font-size:13px;padding:0}
+.addset{justify-self:start;border:1px dashed var(--line);background:none;color:var(--accent);border-radius:8px;padding:6px 12px;font:500 13px/1 var(--f-body)}
+.srm{flex:none;border:0;background:none;color:var(--muted);font-size:18px;line-height:1;padding:0 2px}
+.srm{margin-left:auto}.srm+.sok{margin-left:2px}
 .sok{margin-left:auto;flex:none;width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--fg) 28%,transparent);background:var(--surface);color:transparent;font:700 16px/1 var(--f-body);padding:0}
 .sok[aria-pressed="true"]{background:var(--done);border-color:var(--done);color:var(--accent-fg)}
 
@@ -257,6 +260,25 @@ li.ex.fold details.why,li.ex.fold .watch,li.ex.fold .dose{display:none}
 .wtiles b{display:block;font:800 24px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
 .wtiles span{font-size:12px;color:var(--muted)}
 .bests{padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--flag) 10%,var(--surface));font-size:14px;display:grid;gap:4px}
+
+/* add exercise, your exercises */
+.addex{margin-top:12px}
+.tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.tag{display:inline-block;font:600 10px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 7px;border-radius:99px;background:color-mix(in srgb,var(--accent) 14%,var(--surface));color:var(--accent);margin-left:6px}
+.tags .tag{margin-left:0}
+.linkish{border:0;background:none;color:var(--accent);font-size:13px;padding:0;text-decoration:underline}
+.pk-in{max-height:88vh;overflow-y:auto}
+.pk-body{display:grid;gap:12px}
+.pk-body h2{font-size:28px;font-weight:700}
+.pk-body input[type=search],.pk-body input:not([type]),.pk-body input[inputmode=url],.pk-body textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.pk-list{display:grid;gap:4px;max-height:44vh;overflow-y:auto}
+.pk-item{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;font:500 15px/1.2 var(--f-body);color:var(--fg)}
+.pk-item .tag{margin-left:auto}
+.pk-dose{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.pk-dose label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.pk-dose input[type=number]{width:72px;font:500 16px var(--f-mono);padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);text-align:center}
+.pk-side{display:flex!important;align-items:center;gap:6px;font-size:14px;color:var(--fg)}
+.sechd .btn{margin-left:auto}
 
 /* core video */
 .btn.watch{margin-top:8px;padding:8px 14px;font-size:14px}
@@ -469,6 +491,7 @@ input[type=date]{width:100%;font:500 16px var(--f-mono);padding:12px;border-radi
   <div class="vs-hd"><div><span class="eyebrow" id="vs-ch"></span><b id="vs-t"></b></div><button class="btn ghost" data-vclose>Close</button></div>
   <div class="vs-frame"></div>
   <div class="actions"><button class="btn" data-vdone>Done · check it off</button></div></div></div>
+<div id="pick" class="sheet-wrap" hidden role="dialog" aria-modal="true"><div class="vs-in pk-in"><div class="pk-body"></div></div></div>
 <div id="sumsheet" class="sheet-wrap" hidden role="dialog" aria-modal="true"><div class="vs-in"><div class="sum-body"></div>
   <div class="actions"><button class="btn" data-sclose>Close</button></div></div></div>
 <div id="tbar" hidden role="timer" aria-live="polite"><div class="tb-in"><div class="tb-txt"><span class="tb-l"></span><b class="tb-t"></b><span class="tb-s"></span></div>
@@ -813,6 +836,11 @@ const CORE_PLAN={
  ski:{"Lower A":["getskifit","end"],"Lower B":["oatblast","end"],"Ski sim":["jack15","end"],"Intervals":["jack10","end"],"Upper + Z2":["sync","start"],"Long Z2":["jackadv","start"],"Recovery":["gentle","start"]},
  board:{"Lower A":["getskifit","end"],"Lower B":["taevis","end"],"Ride sim":["mdcore","end"],"Intervals":["md5","end"],"Upper + Z2":["mdeasy","start"],"Long Z2":["oatblast","start"],"Recovery":["gentle","start"]}};
 // Every workout ends with couch stretch and foam rolling (first-chair day excepted)
+// Exercises you add to a day are stored with that day's sets (sets._meta.add) and go in before the cool-down
+function addYours(d,s){
+  let add=[];try{add=(((state.log[s]||{}).sets||{})._meta||{}).add||[];}catch(e){}
+  add.forEach(a=>{if(!E[a.id]||d.x.some(x=>x.id===a.id))return;const i=d.x.findIndex(x=>x.cd);d.x.splice(i<0?d.x.length:i,0,{...it(a.id,a.dose,a.m),added:true});});
+}
 function addCoolDown(d){
   if(d.goal)return;
   if(!d.x.some(x=>x.id==="couch")){const i=d.x.findIndex(x=>x.id==="foamroll");d.x.splice(i<0?d.x.length:i,0,cd("couch","2 × 45 s /side",4));}
@@ -857,6 +885,7 @@ function plan(s){
     d.x=d.x.filter(x=>!r.drop.includes(x.id)).flatMap(x=>{const to=r.swap[x.id];if(!to)return [x];return d.x.some(y=>y.id===to)?[]:[{...x,id:to}]});});
   addCore(d,k);
   addCoolDown(d);
+  addYours(d,s);   // exercises you added to this day
   d.phase=k;d.week=weekOf(s);d.total=d.x.reduce((a,b)=>a+b.m,0);
   return planCache[s]=d;
 }
@@ -922,7 +951,9 @@ async function sync(){
       const l=state.log[r.day];
       if(!l||!l.u||Date.parse(r.updated_at)>=Date.parse(l.u))state.log[r.day]={done:r.done||[],rpe:r.rpe,note:r.note||"",sets:r.sets||(l&&l.sets)||{},u:r.updated_at};
     });
+    for(const k in planCache)delete planCache[k];   // pulled days may add or remove exercises
     await syncProfile();
+    await syncCustom();
     lastSync=new Date();
   }catch(e){syncErr=e.message||String(e);}
   syncing=false;cache();setSync();render();
@@ -975,7 +1006,7 @@ function renderAcct(){
   if(user)return `<div class="panel acct"><h2>Sync</h2><dl><dt>Signed in</dt><dd>${esc(user.email||"")}</dd><dt>Last sync</dt><dd>${lastSync?lastSync.toLocaleTimeString():"Not yet"}</dd><dt>Waiting</dt><dd>${n} day${n===1?"":"s"}</dd>${syncErr?`<dt>Error</dt><dd class="err">${esc(syncErr)}</dd>`:""}</dl>
     ${msg}<div class="actions"><button class="btn" data-act="syncnow">Sync now</button><button class="btn ghost" data-act="signout">Sign out</button></div>
     <details style="margin-top:18px"><summary class="eyebrow" style="cursor:pointer">Delete my synced data</summary>
-      <p style="margin-top:10px;font-size:14px">This removes your logged workouts and settings from the server. This device keeps its copy. You cannot undo it.</p>
+      <p style="margin-top:10px;font-size:14px">This removes your logged workouts, settings and your own exercises from the server. This device keeps its copy. You cannot undo it.</p>
       <div class="actions">${A.confirmDel?`<button class="btn" style="background:var(--car);border-color:var(--car)" data-act="delconfirm">Yes, delete it</button><button class="btn ghost" data-act="delcancel">Cancel</button>`:`<button class="btn ghost" data-act="delask">Delete my synced data</button>`}</div></details></div>`;
   const tabs=`<div class="seg" style="--n:2;margin:4px 0 14px"><button class="opt" data-amode="signin" aria-pressed="${mode==="signin"}">Sign in</button><button class="opt" data-amode="signup" aria-pressed="${mode==="signup"}">Create account</button></div>`;
   if(mode==="forgot")return `<div class="panel acct"><h2>Reset your password</h2><p>We will email you a link to set a new password.</p>
@@ -1045,14 +1076,14 @@ function renderDay(){
   const dm=Object.values(doneMin(s)).reduce((a,b)=>a+b,0);
   return `<div class="grid2">
   <section>
-    ${topCards()}
-    ${getMeta(s).fin?`<div class="panel topcard"><span class="eyebrow">Workout complete</span>${statTiles(s)}<div class="actions"><button class="btn ghost" data-act="summary">View summary</button><button class="btn ghost" data-act="unfinish">Reopen workout</button></div></div>`:""}
-    <div class="dayhd"${topCards()||getMeta(s).fin?' style="margin-top:16px"':""}>
+    <div class="dayhd">
       <button class="nav" data-act="prev" aria-label="Previous day" ${s<=START?"disabled":""}>‹</button>
       <span class="date">${fmt(s)}</span>
       <button class="nav" data-act="next" aria-label="Next day" ${s>=END?"disabled":""}>›</button>
       ${s!==TODAY&&TODAY>=START&&TODAY<=END?`<button class="todaybtn" data-act="today">Go to today</button>`:""}
     </div>
+    ${topCards()}
+    ${getMeta(s).fin?`<div class="panel topcard"><span class="eyebrow">Workout complete</span>${statTiles(s)}<div class="actions"><button class="btn ghost" data-act="summary">View summary</button><button class="btn ghost" data-act="unfinish">Reopen workout</button></div></div>`:""}
     <div class="panel session" style="margin-top:12px">
      <div class="stub">
       <span class="eyebrow"><span>${s===TODAY?"Today's run":s<TODAY?"Past run":"Upcoming run"}</span><span>${ph.name}</span></span>
@@ -1075,14 +1106,16 @@ function renderDay(){
             <div class="exname"><i class="cat c-${ex.c}" title="${CATS[ex.c]}"></i><span class="nm">${x.id==="core"?`Core · ${CORE_VIDS[x.vid].t}`:ex.n}</span>${x._kind!=="single"&&on?`<button class="foldbtn" data-fold="${x.id}" aria-expanded="${!x._fold}">${x._fold?"Show sets":"Hide sets"}</button>`:""}</div>
             ${x._fold?`<div class="foldsum">${foldLine(s,x)}</div>`:""}
             <div class="dose">${x.dose}${x.id==="core"?"":` <em>· ~${x.m} min</em>`}${ytUrl(x.id)?` · ${ytLink(x.id)}`:""}</div>
+            ${x.added||ex.custom?`<div class="tags">${ex.custom?`<span class="tag">Your exercise</span>`:""}${x.added?`<span class="tag">Added today</span><button class="linkish" data-rmex="${x.id}">Remove</button>`:""}</div>`:""}
             ${x.id==="core"?`<button class="btn watch" data-watch="${x.vid}">▶ Watch here</button>`:""}
             ${x._kind==="single"&&!on&&itemParts(x)?`<button class="btn ghost tgo" data-tgo="${x.id}">▶ Start timer · ${mmss(partsTime(itemParts(x)))}</button>`:""}
             <details class="why"><summary>How and why</summary>
-              <div class="whybody"><h4>How</h4><p>${ex.how}</p><h4>Why</h4><p>${ex.why}</p><h4>Sources</h4>${srcList(ex.s)}</div>
+              <div class="whybody"><h4>How</h4><p>${ex.how}</p>${ex.custom?(ex.note?`<h4>Your notes</h4><p>${ex.note}</p>`:""):`<h4>Why</h4><p>${ex.why}</p><h4>Sources</h4>${srcList(ex.s)}`}</div>
             </details>
           </div>
           ${setRows(s,x)}
         </li>`}).join("")}</ul>
+      <button class="addset addex" data-act="addex">+ Add exercise</button>
       <div class="log">
         <div><label>How hard was the session? (RPE 1–10)</label>
           <div class="rpe">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-rpe="${n}" aria-pressed="${e.rpe===n}">${n}</button>`).join("")}</div></div>
@@ -1202,7 +1235,7 @@ const PRINCIPLES0=[
 const PRINCIPLES=BOARD?PRINCIPLES0.map(r=>BOARD_PRINCIPLES[r[0]]||r):PRINCIPLES0;
 function renderSci(){
   const used=new Set();ALL.forEach(s=>plan(s).x.forEach(x=>used.add(x.id)));
-  const ids=Object.keys(E).filter(id=>used.has(id)&&(state.lib==="all"||E[id].c===state.lib));
+  const ids=Object.keys(E).filter(id=>(used.has(id)||E[id].custom)&&(state.lib==="all"||E[id].c===state.lib)).sort((a,b)=>(E[b].custom?1:0)-(E[a].custom?1:0));
   const DAYN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],order=[1,2,3,4,5,6,0];
   const wk=order.map(i=>`${DAYN[i]} ${TPL[WEEK[i]]({...PH.base}).short.replace("Recovery","recovery").replace("Ski sim",BOARD?"Ride sim":"Ski sim")}`).join(", ");
   return `<div class="sci">
@@ -1217,9 +1250,9 @@ function renderSci(){
    </tbody></table></div></section>
   <section><div class="sechd"><h2>Principles</h2></div>
    <div class="principles" style="margin-top:8px">${PRINCIPLES.map(([t,p,s])=>`<div class="panel pr"><h3>${t}</h3><p>${p}</p>${srcList(s)}</div>`).join("")}</div></section>
-  <section><div class="sechd"><h2>Exercise library</h2><span class="eyebrow">${ids.length} exercises</span></div>
+  <section><div class="sechd"><h2>Exercise library</h2><span class="eyebrow">${ids.length} exercises</span><button class="btn ghost" data-act="newex">+ New exercise</button></div>
    <div class="filters">${[["all","All"],...Object.entries(CATS)].map(([k,v])=>`<button data-lib="${k}" aria-pressed="${state.lib===k}">${k!=="all"?`<i class="cat c-${k}"></i>`:""}${v}</button>`).join("")}</div>
-   <div class="lib">${ids.map(id=>{const x=E[id];return `<div class="panel libitem"><h4><i class="cat c-${x.c}"></i>${x.n}</h4><span class="lbl">How</span><p>${x.how}</p><span class="lbl">Why</span><p>${x.why}</p>${srcList(x.s)}${ytUrl(id)?`<p style="margin:8px 0 0">${ytLink(id)}</p>`:""}</div>`}).join("")}</div></section>
+   <div class="lib">${ids.map(id=>{const x=E[id];return x.custom?`<div class="panel libitem"><h4><i class="cat c-${x.c}"></i>${x.n}<span class="tag">Your exercise</span></h4><span class="lbl">How</span><p>${x.how||"—"}</p>${x.note?`<span class="lbl">Your notes</span><p>${x.note}</p>`:""}<p class="lbl" style="text-transform:none;letter-spacing:0">${CATS[x.c]}${x.load?" · takes a weight":""}</p>${ytUrl(id)?`<p style="margin:8px 0 0">${ytLink(id)}</p>`:""}<div class="actions" style="margin-top:8px"><button class="btn ghost" data-editex="${id}">Edit</button>${state.delEx===id?`<button class="btn" style="background:var(--car);border-color:var(--car)" data-delex="${id}">Yes, delete</button><button class="btn ghost" data-act="delexcancel">Cancel</button>`:`<button class="btn ghost" data-askdelex="${id}">Delete</button>`}</div></div>`:`<div class="panel libitem"><h4><i class="cat c-${x.c}"></i>${x.n}</h4><span class="lbl">How</span><p>${x.how}</p><span class="lbl">Why</span><p>${x.why}</p>${srcList(x.s)}${ytUrl(id)?`<p style="margin:8px 0 0">${ytLink(id)}</p>`:""}</div>`}).join("")}</div></section>
   <section><div class="sechd"><h2>References</h2></div>
    <div class="panel" style="padding:18px;margin-top:8px"><ol class="refs">${Object.keys(S).sort((a,b)=>S[a][0].localeCompare(S[b][0])).map(id=>`<li><a href="${scholar(id)}" target="_blank" rel="noopener">${S[id][0]}</a>. ${S[id][1]}</li>`).join("")}</ol>
    <p style="font-size:13px;color:var(--muted);margin:12px 0 0">This plan is general guidance, not medical advice. Stop any exercise that causes sharp pain and see a physician or physical therapist about it.</p></div></section>
@@ -1229,6 +1262,11 @@ function renderSci(){
 /* ---------------- what's new ---------------- */
 // Newest first. Add an entry for every update people can see. id must be unique.
 const CHANGELOG=[
+ {id:"2026-10-25-library",d:"2026-10-25",t:"Add sets, add exercises, build your library",items:[
+  "The day arrows stay at the top of the Day tab and stick there while you scroll.",
+  "+ Add set copies your last set. Remove added sets with ×.",
+  "+ Add exercise puts any library exercise into today's workout, before the cool-down.",
+  "+ New exercise adds your own exercises to the library. They are marked Your exercise and sync to your account."]},
  {id:"2026-10-19-spanish",d:"2026-10-19",t:"Spanish squat holds on Lower A",items:[
   "Lower A adds a Spanish squat hold after the Bulgarian split squat: 3 × 30 s in base weeks, 3 × 45 s in the strength and ski-specific weeks.",
   "It trains the long, held quad work of a ski turn. Tap ▶ on a set to time the hold.",
@@ -1533,7 +1571,7 @@ function suggest(s,x){
 // The day's set rows for one exercise: saved values, else the suggested weight (or last time's) and the planned reps
 function setsFor(s,x){
   const d=parseDose(x),e=entry(s),saved=(e.sets||{})[x.id]||[],all=e.done.includes(x.id),prev=LOAD.has(x.id)?lastSet(x.id,s):null,sg=suggest(s,x);
-  return Array.from({length:d.sets},(_,i)=>{const r={w:sg?sg.w:prev?toUnit(prev.w,prev.wu):"",wu:UNIT(),r:d.reps,rpe:null,ok:false,...(saved[i]||{})};if(all)r.ok=true;r.w=toUnit(r.w,r.wu);r.wu=UNIT();return r;});
+  return Array.from({length:Math.max(d.sets,saved.length)},(_,i)=>{const r={w:sg?sg.w:prev?toUnit(prev.w,prev.wu):"",wu:UNIT(),r:d.reps,rpe:null,ok:false,...(saved[i]||{})};if(all)r.ok=true;r.w=toUnit(r.w,r.wu);r.wu=UNIT();return r;});
 }
 const getMeta=s=>(((state.log[s]||{}).sets||{})._meta)||{};
 // Records when the workout started (first check-off) and any other workout-level fields
@@ -1541,6 +1579,22 @@ function setMeta(s,patch){
   const e={...entry(s)},m={...((e.sets||{})._meta||{}),...patch};if(!m.st)m.st=new Date().toISOString();
   for(const k in m)if(m[k]==null)delete m[k];
   e.sets={...(e.sets||{}),_meta:m};state.log[s]=e;save(s);
+}
+// Extra sets you add during a workout copy the last set; only added sets can be removed
+function addSet(s,id){
+  const x=plan(s).x.find(y=>y.id===id);if(!x)return;
+  const rows=setsFor(s,x),last=rows[rows.length-1]||{};
+  rows.push({w:last.w??"",wu:UNIT(),r:last.r??parseDose(x).reps,rpe:null,ok:false,x:true});
+  saveRows(s,id,rows);
+}
+function removeSet(s,id,i){
+  const x=plan(s).x.find(y=>y.id===id);if(!x)return;
+  const rows=setsFor(s,x);if(!rows[i]||!rows[i].x)return;
+  rows.splice(i,1);saveRows(s,id,rows);
+}
+function saveRows(s,id,rows){
+  const e={...entry(s)};e.sets={...(e.sets||{}),[id]:rows};e.done=(e.done||[]).filter(z=>z!==id);if(rows.length&&rows.every(r=>r.ok))e.done.push(id);
+  state.log[s]=e;save(s);
 }
 function putSet(s,id,i,patch){
   const x=plan(s).x.find(y=>y.id===id);if(!x)return [];
@@ -1568,7 +1622,9 @@ function setRows(s,x){
     ${d.kind==="reps"?`${ld?`<span class="sx">×</span>`:""}<input class="sr" type="number" inputmode="numeric" min="0" max="99" value="${r.r??""}" data-sf="${x.id}:${i}:r" aria-label="Reps, set ${i+1}"><span class="su">reps</span>`:`<span class="sfix">${fixed}</span>`}
     ${d.kind==="reps"||d.kind==="carry"?`<select data-sf="${x.id}:${i}:rpe" aria-label="RPE for set ${i+1} (optional)"><option value="">RPE</option>${[6,7,8,9,10].map(n=>`<option value="${n}"${r.rpe===n?" selected":""}>${n}</option>`).join("")}</select>`:""}
     ${timed&&!r.ok?`<button class="sgo" data-sgo="${x.id}:${i}" aria-label="Start the timer for set ${i+1}">▶</button>`:""}
-    <button class="sok" data-sok="${x.id}:${i}" aria-pressed="${r.ok}" aria-label="Set ${i+1} done">✓</button></div>`).join("")}</div>`;
+    ${r.x?`<button class="srm" data-rmset="${x.id}:${i}" aria-label="Remove set ${i+1}">×</button>`:""}
+    <button class="sok" data-sok="${x.id}:${i}" aria-pressed="${r.ok}" aria-label="Set ${i+1} done">✓</button></div>`).join("")}
+    <button class="addset" data-addset="${x.id}">+ Add set</button></div>`;
 }
 
 // Timer: counts down to a saved end time, so it stays right if the phone locks or the app reloads
@@ -1576,7 +1632,7 @@ let T=null,wl=null,actx=null,tTimer=null;
 try{T=JSON.parse(localStorage.getItem("fc.timer")||"null")}catch(e){}
 function setT(t){T=t;try{t?localStorage.setItem("fc.timer",JSON.stringify(t)):localStorage.removeItem("fc.timer")}catch(e){}tick();}
 function nextUp(s,x,i){
-  const d=parseDose(x);if(i<d.sets-1)return `${E[x.id].n} · set ${i+2} of ${d.sets}`;
+  const cnt=setsFor(s,x).length;if(i<cnt-1)return `${E[x.id].n} · set ${i+2} of ${cnt}`;
   const xs=plan(s).x,k=xs.findIndex(y=>y.id===x.id),n=xs.slice(k+1).find(y=>!entry(s).done.includes(y.id));
   return n?E[n.id].n:"";
 }
@@ -1591,7 +1647,7 @@ function runParts(parts,fin){
   setT({phase:"work",end:Date.now()+first.secs*1000,total:first.secs,label:first.label,sub:first.sub,queue:rest,fin});wake();
 }
 function startWork(s,x,i){
-  const d=parseDose(x),lbl={hold:"Hold",rounds:"Round",intervals:"Hard"}[d.kind]||"Go",n=E[x.id].n,of=`${d.kind==="rounds"?"round":"set"} ${i+1} of ${d.sets}`;
+  const d=parseDose(x),lbl={hold:"Hold",rounds:"Round",intervals:"Hard"}[d.kind]||"Go",n=E[x.id].n,of=`${d.kind==="rounds"?"round":"set"} ${i+1} of ${setsFor(s,x).length}`;
   const parts=d.kind==="hold"&&d.side?["left","right"].map(sd=>({secs:d.secs,label:lbl,sub:`${n} · ${sd} side · ${of}`})):[{secs:d.secs,label:lbl,sub:`${n} · ${of}`}];
   runParts(parts,{type:"set",s,id:x.id,i});
 }
@@ -1639,8 +1695,112 @@ document.addEventListener("click",e=>{const b=e.target.closest("#tbar [data-t]")
   T.end=Math.max(Date.now()+1000,T.end+(+v)*1000);T.total=Math.max(T.total,Math.ceil((T.end-Date.now())/1000));setT(T);});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&T){tick();if(T)wake();}});
 
+/* ---------------- your own exercises (library) ---------------- */
+// Saved on this device (firstchair.custom) and synced to the custom_exercises table. Text is cleaned so it cannot become HTML.
+const CUSTOM_KEY="firstchair.custom";
+let CUSTOM={},customPending={},hasCustomTable=true;
+try{const c=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");CUSTOM=c.items||{};customPending=c.pending||{};}catch(e){}
+const clean=(v,max)=>String(v??"").replace(/[<>"`]/g,"").replace(/&/g,"and").trim().slice(0,max);
+const ytId=v=>{const m=String(v||"").match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/)||String(v||"").match(/^([\w-]{11})$/);return m?m[1]:"";};
+function cacheCustom(){try{localStorage.setItem(CUSTOM_KEY,JSON.stringify({items:CUSTOM,pending:customPending}))}catch(e){}}
+// Put your exercises into the library the rest of the app reads (E, LOAD, VID)
+function applyCustom(){
+  for(const id in E)if(E[id].custom){delete E[id];delete VID[id];LOAD.delete(id);}
+  for(const id in CUSTOM){const c=CUSTOM[id];if(c.deleted||!CATS[c.c])continue;
+    E[id]={n:clean(c.n,60)||"My exercise",c:c.c,how:clean(c.how,600),note:clean(c.note,600),why:"",s:[],custom:true,load:!!c.load};
+    if(c.load)LOAD.add(id);if(ytId(c.yt))VID[id]=ytId(c.yt);}
+  for(const k in planCache)delete planCache[k];
+}
+function saveCustom(id,data){
+  const u=new Date().toISOString();CUSTOM[id]={...data,u};customPending[id]=u;cacheCustom();applyCustom();
+  clearTimeout(pushTimer);pushTimer=setTimeout(sync,800);
+}
+async function syncCustom(){
+  if(!hasCustomTable)return;
+  try{
+    const ids=Object.keys(customPending);
+    if(ids.length){
+      const rows=ids.map(id=>{const c=CUSTOM[id]||{};const {u,deleted,...data}=c;return {user_id:user.id,id,data,deleted:!!deleted,updated_at:u||new Date().toISOString()};});
+      const {error}=await sb.from("custom_exercises").upsert(rows,{onConflict:"user_id,id"});if(error)throw error;
+      rows.forEach(r=>{if(customPending[r.id]===r.updated_at)delete customPending[r.id];});
+    }
+    const {data,error}=await sb.from("custom_exercises").select("id,data,deleted,updated_at");if(error)throw error;
+    (data||[]).forEach(r=>{if(customPending[r.id])return;const l=CUSTOM[r.id];if(!l||!l.u||Date.parse(r.updated_at)>=Date.parse(l.u))CUSTOM[r.id]={...r.data,deleted:r.deleted,u:r.updated_at};});
+    cacheCustom();applyCustom();
+  }catch(e){if(/custom_exercises/.test(e.message||""))hasCustomTable=false;console.warn("Custom exercise sync skipped:",e.message||e);}
+}
+
+/* ---------------- add-exercise picker and exercise form ---------------- */
+const DEFAULT_DOSE={str:["reps",3,10],pow:["reps",3,5],bal:["hold",3,30],mob:["hold",2,45],car:["min",1,20]};
+const pk={step:"list",q:"",cat:"all",id:null,edit:null,dose:null};
+function doseText(d){return d.kind==="min"?`${d.v} min`:`${d.sets} × ${d.v}${d.kind==="hold"?" s":""}${d.side?" /side":""}`;}
+function doseMins(d){return d.kind==="min"?d.v:Math.max(2,Math.round(d.kind==="hold"?d.sets*(d.v*(d.side?2:1)+60)/60:d.sets*(d.side?3.5:2.5)));}
+function openPicker(step,id){
+  pk.step=step||"list";pk.q="";pk.cat="all";pk.id=id||null;pk.edit=null;
+  if(step==="form"&&id){const c=CUSTOM[id];pk.edit={...c};}
+  if(step==="form"&&!id)pk.edit={n:"",c:"str",load:false,how:"",note:"",yt:""};
+  const el=document.getElementById("pick");el.hidden=false;document.body.style.overflow="hidden";renderPicker();
+}
+function closePicker(){document.getElementById("pick").hidden=true;document.body.style.overflow="";}
+function chooseExercise(id){const [kind,sets,v]=DEFAULT_DOSE[E[id].c]||["reps",3,10];pk.id=id;pk.dose={kind,sets,v,side:false};pk.step="dose";renderPicker();}
+function renderPicker(){
+  const el=document.querySelector("#pick .pk-body"),s=state.sel,inDay=new Set(plan(s).x.map(x=>x.id));
+  if(pk.step==="list"){
+    const q=pk.q.toLowerCase(),ids=Object.keys(E).filter(id=>id!=="core"&&!inDay.has(id)&&(pk.cat==="all"||E[id].c===pk.cat)&&(!q||E[id].n.toLowerCase().includes(q))).sort((a,b)=>(E[b].custom?1:0)-(E[a].custom?1:0)||E[a].n.localeCompare(E[b].n));
+    el.innerHTML=`<span class="eyebrow">Add to ${fmt(s)}</span><h2>Add an exercise</h2>
+      <input type="search" id="pk-q" placeholder="Search exercises" value="${esc(pk.q)}" autocomplete="off">
+      <div class="filters">${[["all","All"],...Object.entries(CATS)].map(([k,v])=>`<button data-pkcat="${k}" aria-pressed="${pk.cat===k}">${k!=="all"?`<i class="cat c-${k}"></i>`:""}${v}</button>`).join("")}</div>
+      <div class="pk-list">${ids.map(id=>`<button class="pk-item" data-pkpick="${id}"><i class="cat c-${E[id].c}"></i><span>${E[id].n}</span>${E[id].custom?`<span class="tag">Yours</span>`:""}</button>`).join("")||`<p class="sub">No match. Make it a new exercise below.</p>`}</div>
+      <div class="actions"><button class="btn ghost" data-pknew>+ New exercise</button><button class="btn ghost" data-pkclose>Close</button></div>`;
+    return;
+  }
+  if(pk.step==="dose"){const d=pk.dose,x=E[pk.id];
+    el.innerHTML=`<span class="eyebrow">Add to ${fmt(s)}</span><h2>${x.n}</h2>
+      <div class="grp"><span class="fld">Type</span><div class="seg">${[["reps","Reps"],["hold","Timed"],["min","Minutes"]].map(([k,l])=>`<button class="opt" data-pkkind="${k}" aria-pressed="${d.kind===k}">${l}</button>`).join("")}</div></div>
+      <div class="grp pk-dose">${d.kind==="min"?`<label>Minutes <input type="number" inputmode="numeric" min="1" max="120" id="pk-v" value="${d.v}"></label>`:`<label>Sets <input type="number" inputmode="numeric" min="1" max="10" id="pk-sets" value="${d.sets}"></label><span>×</span><label>${d.kind==="hold"?"Seconds":"Reps"} <input type="number" inputmode="numeric" min="1" max="${d.kind==="hold"?600:50}" id="pk-v" value="${d.v}"></label><label class="pk-side"><input type="checkbox" id="pk-side" ${d.side?"checked":""}> Per side</label>`}</div>
+      <p class="sub" style="margin:0">Shows as <b class="mono">${doseText(d)}</b>, about ${doseMins(d)} min. It goes before the cool-down.</p>
+      <div class="actions"><button class="btn" data-pkadd>Add to today</button><button class="btn ghost" data-pkback>Back</button></div>`;
+    return;
+  }
+  const c=pk.edit;
+  el.innerHTML=`<span class="eyebrow">Your library</span><h2>${pk.id?"Edit exercise":"New exercise"}</h2>
+    <div class="grp"><label class="fld" for="ex-n">Name</label><input id="ex-n" maxlength="60" value="${esc(c.n)}" placeholder="Example: Single-leg extension"></div>
+    <div class="grp"><span class="fld">Category</span><div class="seg" style="--n:3">${Object.entries(CATS).map(([k,v])=>`<button class="opt" data-excat="${k}" aria-pressed="${c.c===k}">${v}</button>`).join("")}</div></div>
+    <div class="grp"><label class="pk-side"><input type="checkbox" id="ex-load" ${c.load?"checked":""}> Takes a weight (shows weight boxes and suggestions)</label></div>
+    <div class="grp"><label class="fld" for="ex-how">How to do it</label><textarea id="ex-how" maxlength="600" placeholder="Setup, movement, what to feel">${esc(c.how)}</textarea></div>
+    <div class="grp"><label class="fld" for="ex-note">Your notes (optional)</label><textarea id="ex-note" maxlength="600">${esc(c.note)}</textarea></div>
+    <div class="grp"><label class="fld" for="ex-yt">YouTube demo link (optional)</label><input id="ex-yt" inputmode="url" value="${esc(c.yt)}" placeholder="https://youtu.be/..."></div>
+    <p class="err" id="ex-err" hidden></p>
+    <div class="actions"><button class="btn" data-exsave>Save</button><button class="btn ghost" data-pkclose>Cancel</button></div>`;
+}
+function readForm(){const g=id=>document.getElementById(id);return {...pk.edit,n:g("ex-n").value,how:g("ex-how").value,note:g("ex-note").value,yt:g("ex-yt").value,load:g("ex-load").checked};}
+function readDose(){const g=id=>document.getElementById(id),d=pk.dose,n=(id,lo,hi)=>Math.min(hi,Math.max(lo,Math.round(+(g(id)||{}).value||0)||lo));
+  d.v=n("pk-v",1,d.kind==="hold"?600:d.kind==="min"?120:50);if(d.kind!=="min"){d.sets=n("pk-sets",1,10);d.side=!!(g("pk-side")||{}).checked;}}
+document.getElementById("pick").addEventListener("input",e=>{if(e.target.id==="pk-q"){pk.q=e.target.value;const pos=e.target.selectionStart;renderPicker();const q=document.getElementById("pk-q");q.focus();q.setSelectionRange(pos,pos);}});
+document.getElementById("pick").addEventListener("change",e=>{if(pk.step==="dose"&&/^pk-/.test(e.target.id)){readDose();renderPicker();}});
+document.getElementById("pick").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(e.target.id==="pick"){closePicker();return;}if(!b)return;const s=state.sel;
+  if(b.dataset.pkcat){pk.cat=b.dataset.pkcat;renderPicker();return;}
+  if(b.dataset.pkpick){chooseExercise(b.dataset.pkpick);return;}
+  if(b.hasAttribute("data-pkclose")){closePicker();return;}
+  if(b.hasAttribute("data-pkback")){pk.step="list";renderPicker();return;}
+  if(b.hasAttribute("data-pknew")){pk.step="form";pk.id=null;pk.edit={n:pk.q,c:pk.cat==="all"?"str":pk.cat,load:false,how:"",note:"",yt:""};pk.fromPick=true;renderPicker();return;}
+  if(b.dataset.pkkind){readDose();const k=b.dataset.pkkind,[kk,sets,v]=k==="reps"?["reps",3,10]:k==="hold"?["hold",3,30]:["min",1,20];pk.dose={kind:kk,sets,v,side:pk.dose.side};renderPicker();return;}
+  if(b.hasAttribute("data-pkadd")){readDose();const m=getMeta(s),add=(m.add||[]).filter(a=>a.id!==pk.id).concat({id:pk.id,dose:doseText(pk.dose),m:doseMins(pk.dose)});setMeta(s,{add});delete planCache[s];closePicker();render();return;}
+  if(b.dataset.excat){pk.edit=readForm();pk.edit.c=b.dataset.excat;renderPicker();return;}
+  if(b.hasAttribute("data-exsave")){const f=readForm(),err=document.getElementById("ex-err");
+    if(!clean(f.n,60)){err.textContent="Give it a name.";err.hidden=false;return;}
+    if(f.yt.trim()&&!ytId(f.yt)){err.textContent="That doesn't look like a YouTube link. Leave it empty or paste the video's link.";err.hidden=false;return;}
+    const id=pk.id||("my_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+    saveCustom(id,{n:clean(f.n,60),c:f.c,load:!!f.load,how:clean(f.how,600),note:clean(f.note,600),yt:ytId(f.yt)});
+    if(pk.fromPick){pk.fromPick=false;chooseExercise(id);}else{closePicker();render();}return;}
+});
+
 /* ---------------- render + events ---------------- */
 const app=document.getElementById("app");
+// The day row sticks under the tab bar; keep its offset equal to the bar's height
+const dockEl=document.querySelector(".dock"),setDockH=()=>document.documentElement.style.setProperty("--dockh",dockEl.offsetHeight+"px");
+setDockH();window.addEventListener("resize",setDockH);if(window.ResizeObserver)new ResizeObserver(setDockH).observe(dockEl);
 function render(){
   renderHeader();
   const openWhy=[...app.querySelectorAll("details.why[open]")].map(d=>d.closest("li")?.querySelector("[data-tick]")?.dataset.tick);
@@ -1656,6 +1816,12 @@ app.addEventListener("click",e=>{
   if(t.dataset.tick&&parseDose(plan(s).x.find(x=>x.id===t.dataset.tick)).kind!=="single"){const id=t.dataset.tick,on=entry(s).done.includes(id),x=plan(s).x.find(y=>y.id===id);setsFor(s,x).forEach((r,i)=>putSet(s,id,i,{ok:!on,t:!on?(r.t||new Date().toISOString()):null}));render();return;}
   if(t.dataset.sok){const [id,i]=t.dataset.sok.split(":"),x=plan(s).x.find(y=>y.id===id),r=setsFor(s,x)[+i];putSet(s,id,+i,{ok:!r.ok,t:!r.ok?new Date().toISOString():null});if(!r.ok)startRest(s,x,+i);render();return;}
   if(t.dataset.watch){openVideo(t.dataset.watch);return;}
+  if(t.dataset.rmex){const m=getMeta(s);setMeta(s,{add:(m.add||[]).filter(a=>a.id!==t.dataset.rmex)});const en={...entry(s)};en.done=en.done.filter(z=>z!==t.dataset.rmex);if(en.sets){en.sets={...en.sets};delete en.sets[t.dataset.rmex];}state.log[s]=en;save(s);delete planCache[s];render();return;}
+  if(t.dataset.editex){openPicker("form",t.dataset.editex);return;}
+  if(t.dataset.askdelex){state.delEx=t.dataset.askdelex;render();return;}
+  if(t.dataset.delex){saveCustom(t.dataset.delex,{...CUSTOM[t.dataset.delex],deleted:true});state.delEx=null;render();return;}
+  if(t.dataset.addset){addSet(s,t.dataset.addset);render();return;}
+  if(t.dataset.rmset){const [id,i]=t.dataset.rmset.split(":");removeSet(s,id,+i);render();return;}
   if(t.dataset.fold){const k=s+"|"+t.dataset.fold;state.unfold[k]?delete state.unfold[k]:state.unfold[k]=true;render();return;}
   if(t.dataset.tgo){const x=plan(s).x.find(y=>y.id===t.dataset.tgo);runParts(itemParts(x),{type:"item",s,id:x.id});return;}
   if(t.dataset.sgo){const [id,i]=t.dataset.sgo.split(":");startWork(s,plan(s).x.find(y=>y.id===id),+i);return;}
@@ -1674,7 +1840,7 @@ app.addEventListener("click",e=>{
   if(t.dataset.amode){state.auth.mode=t.dataset.amode;state.auth.err="";state.auth.msg="";render();return;}
   if(a==="delask"){state.auth.confirmDel=true;render();}
   if(a==="delcancel"){state.auth.confirmDel=false;render();}
-  if(a==="delconfirm"){state.auth.confirmDel=false;Promise.all([sb.from("workout_log").delete().eq("user_id",user.id),sb.from("profiles").delete().eq("user_id",user.id)]).then(rs=>{const err=rs.find(r=>r.error&&!/profiles/.test(r.error.message||""));state.auth.msg=err?authMsg(err.error):"Your synced data is deleted. This device still has its copy.";state.pending={};cache();render();});}
+  if(a==="delconfirm"){state.auth.confirmDel=false;Promise.all([sb.from("workout_log").delete().eq("user_id",user.id),sb.from("profiles").delete().eq("user_id",user.id),sb.from("custom_exercises").delete().eq("user_id",user.id)]).then(rs=>{const err=rs.find(r=>r.error&&!/profiles|custom_exercises/.test(r.error.message||""));state.auth.msg=err?authMsg(err.error):"Your synced data is deleted. This device still has its copy.";state.pending={};cache();render();});}
   if(a==="gosignup"){state.auth.mode="signup";state.view="acct";cache();render();window.scrollTo(0,0);}
   if(a==="savedismiss"){try{localStorage.setItem("fc.savedone","1")}catch(e){}render();}
   if(a==="signout"){sb.auth.signOut().then(()=>{user=null;lastSync=null;setSync();render();});}
@@ -1685,6 +1851,9 @@ app.addEventListener("click",e=>{
   if(a==="restart"){saveProfile({...PROFILE,...state.draft,start:TODAY});state.view="today";cache();location.reload();}
   if(a==="replay"){openOnboard(true);}
   if(a==="welcomeok"){try{sessionStorage.removeItem("fc.welcome")}catch(e){}render();}
+  if(a==="addex"){openPicker("list");return;}
+  if(a==="newex"){openPicker("form");return;}
+  if(a==="delexcancel"){state.delEx=null;render();return;}
   if(a==="finish"){const m=getMeta(s),sets=Object.values(entry(s).sets||{}).flat().filter(r=>r&&r.t).map(r=>r.t).sort();setMeta(s,{fin:new Date().toISOString(),st:m.st||sets[0]||new Date().toISOString()});setT(null);render();openSummary(s);return;}
   if(a==="unfinish"){setMeta(s,{fin:null});render();return;}
   if(a==="summary"){openSummary(s);return;}
@@ -1703,7 +1872,7 @@ app.addEventListener("change",e=>{const f=e.target.dataset&&e.target.dataset.sf;
 });
 app.addEventListener("input",e=>{if(e.target.id==="note"){state.log[state.sel]={...entry(state.sel),note:e.target.value};save(state.sel);}});
 app.addEventListener("focusout",e=>{if(e.target.id==="note")setTimeout(render,0);});
-render();setSync();tick();
+applyCustom();render();setSync();tick();
 // New here: no saved answers and nothing logged on this device
 if(!lsGet(PROFILE_KEY)&&!Object.keys(state.log).length)openOnboard(false);
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
