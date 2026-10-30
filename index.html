@@ -450,6 +450,8 @@ input[type=date]{width:100%;font:500 16px var(--f-mono);padding:12px;border-radi
 .setv h2{font-size:28px;margin-bottom:4px}
 .setv .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+/* iPhone zooms the page when you tap a field under 16 px; zoom also unpins the floating timer. Keep every field at 16 px. */
+input,select,textarea{font-size:16px!important}
 </style>
 </head>
 <body>
@@ -1262,6 +1264,9 @@ function renderSci(){
 /* ---------------- what's new ---------------- */
 // Newest first. Add an entry for every update people can see. id must be unique.
 const CHANGELOG=[
+ {id:"2026-10-30-timer",d:"2026-10-30",t:"The timer stays at the bottom",items:[
+  "On iPhone, tapping a weight or reps box used to zoom the page, and the rest timer then scrolled with the exercise.",
+  "Fields no longer zoom the page, and the timer stays pinned to the bottom of your screen."]},
  {id:"2026-10-25-library",d:"2026-10-25",t:"Add sets, add exercises, build your library",items:[
   "The day arrows stay at the top of the Day tab and stick there while you scroll.",
   "+ Add set copies your last set. Remove added sets with ×.",
@@ -1694,6 +1699,10 @@ document.addEventListener("click",e=>{const b=e.target.closest("#tbar [data-t]")
   if(v==="skip"){if(T.phase==="work"){T.end=Date.now();tick();}else setT(null);return;}
   T.end=Math.max(Date.now()+1000,T.end+(+v)*1000);T.total=Math.max(T.total,Math.ceil((T.end-Date.now())/1000));setT(T);});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&T){tick();if(T)wake();}});
+// If the page is zoomed (pinch or keyboard), keep the timer at the bottom of what you can see
+if(window.visualViewport){const vv=window.visualViewport,pin=()=>{const bar=document.getElementById("tbar");if(!bar)return;
+  const gap=window.innerHeight-(vv.offsetTop+vv.height);bar.style.transform=vv.scale>1.01||gap>1?`translate(${vv.offsetLeft}px,${-gap}px)`:"";};
+  vv.addEventListener("resize",pin);vv.addEventListener("scroll",pin);}
 
 /* ---------------- your own exercises (library) ---------------- */
 // Saved on this device (firstchair.custom) and synced to the custom_exercises table. Text is cleaned so it cannot become HTML.
